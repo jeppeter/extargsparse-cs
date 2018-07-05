@@ -95,15 +95,40 @@ public class KeyCls
             if (valtype == "Newtonsoft.Json.Linq.JValue") {
                 val = (JValue) tok;
                 switch (val.Type) {
-                    case 
+                case JTokenType.Integer:
+                    this.typename = "int";
+                    break;
+                case JTokenType.Double:
+                    this.typename = "float";
+                    break;
+                case JTokenType.String:
+                case JTokenType.Null:
+                    this.typename = "string"
+                    break;
+                case JTokenType.Boolean:
+                    this.typename = "bool";
+                    break;
+                default:
+                    throw new KeyException(String.Format("unknown jvalue type [{0}]", val.Type));
+                    break;
                 }
             } else if (valtype == "Newtonsoft.Json.Linq.JArray") {
-
+                this.typename = "list";
             } else if (valtype == "Newtonsoft.Json.Linq.JObject") {
-
+                this.typename = "dict";
             } else {
                 throw new KeyException(String.Format("unknown JToken type [{0}]", valtype));
             }
+        }
+
+        public string get_type()
+        {
+            return this.typename;
+        }
+
+        public string ToString()
+        {
+            return this.typename;
         }
     }
 }
