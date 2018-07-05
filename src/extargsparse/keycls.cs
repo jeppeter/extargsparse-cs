@@ -131,6 +131,16 @@ public class KeyCls
             return this.typename;
         }
     }
+
+    private JToken m_value;
+    private string m_prefix;
+    private string m_flagname;
+    private string m_helpinfo;
+
+    private void __reset()
+    {
+
+    }
 }
 
 
