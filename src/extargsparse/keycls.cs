@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
+
 
 namespace extargsparse
 {
@@ -72,7 +74,7 @@ public class KeyCls
     		i = 0;
     		for (k in this.m_obj.Keys) {
     			if (i > 0) {
-    				rets += ",";
+    				rets += ";";
     			}
     			rets += String.Format("{0}={1}", k.Key,k.Value);
     			i ++;
@@ -82,5 +84,16 @@ public class KeyCls
     	}
     }
 
+    protected class TypeClass
+    {
+        private readonly string typename ;
+        public TypeClass(JToken tok)
+        {
+            var valtype = "";
+            valtype = tok.GetType().FullName;
+        }
+    }
 }
+
+
 }

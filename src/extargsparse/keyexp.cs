@@ -6,7 +6,7 @@ namespace extargsparse
 	{
 		public KeyException(string str) : base(str)
 		{
-			
+			string newstr;
 		}
 	}
 }
