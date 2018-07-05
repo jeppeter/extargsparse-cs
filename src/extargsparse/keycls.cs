@@ -104,7 +104,7 @@ public class KeyCls
                 case JTokenType.String:
                 case JTokenType.Null:
                     this.typename = "string"
-                    break;
+                                    break;
                 case JTokenType.Boolean:
                     this.typename = "bool";
                     break;
@@ -132,14 +132,31 @@ public class KeyCls
         }
     }
 
-    private JToken m_value;
-    private string m_prefix;
-    private string m_flagname;
-    private string m_helpinfo;
+    private object m_value = null;
+    private string m_prefix = null;
+    private string m_flagname = null;
+    private string m_helpinfo = null;
+    private string m_shortflag = null;
+    private object m_nargs = null;
+    private string m_varname = null;
+    private string m_cmdname = null;
+    private string m_function = null;
+    private string m_origkey = null;
+    private bool m_iscmd = null;
+    private bool m_isflag = null;
+    private string m_type = null;
+    private KeyAttr m_attr = null;
+    private bool m_nochange = false;
+    private string m_longprefix = "--";
+    private string m_shortprefix = "-";
 
     private void __reset()
     {
-
+        this.m_value = null;
+        this.m_prefix = null;
+        this.m_flagname = null;
+        this.m_helpinfo = null;
+        this.m_shortflag = null;
     }
 }
 
