@@ -157,6 +157,19 @@ public class KeyCls
         this.m_flagname = null;
         this.m_helpinfo = null;
         this.m_shortflag = null;
+        this.m_nargs = null;
+        this.m_varname = null;
+        this.m_cmdname = null;
+        this.m_function = null;
+        this.m_origkey = null;
+        this.m_iscmd = false;
+        this.m_isflag = false;
+        this.m_type = null;
+        this.m_attr = null;
+        this.m_nochange = false;
+        this.m_longprefix = "--";
+        this.m_shortprefix = "-";
+        return;
     }
 }
 
