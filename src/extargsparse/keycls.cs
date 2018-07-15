@@ -171,6 +171,12 @@ public class KeyCls
         this.m_shortprefix = "-";
         return;
     }
+
+    private bool eq_name(KeyCls other,string name)
+    {   
+        bool retval = false;
+        
+    }
 }
 
 
