@@ -16,6 +16,14 @@ public class KeyCls
     private static readonly Regex m_mustflagexpr = new Regex("^\\$([a-zA-Z_\\|\\?]+[a-zA-Z_0-9\\|\\?\\-]*)", RegexOptions.IgnoreCase);
     private static readonly Regex m_attrexpr = new Regex("\\!([^\\<\\>\\$!\\#\\|]+)\\!");
 
+
+    /*to get the flag words */
+    private static readonly string[] m_flagwords =  new string[] {"flagname","helpinfo", "shortflag", "nargs", "varname"};
+    private static readonly string[] m_flagspecial = new string[] {"value", "prefix"};
+    private static readonly string[] m_cmdwords = new string[] {"cmdname","function","helpinfo"};
+    private static readonly string[] m_otherwords = new string[] {"origkey","iscmd", "isflag", "type","attr","longprefix", "shortprefix"};
+    private static readonly string[] m_formwords = new string[]{"longopt","shortopt","optdest","needarg"};
+
     protected class KeyAttr
     {
         private char m_splitchar = ';';
@@ -172,9 +180,64 @@ public class KeyCls
         return;
     }
 
+    private void __throw_exception(string fmt)
+    {
+        new throw KeyException(fmt);
+    }
+
+    public string Longopt
+    {
+        get {
+            string c = "";
+            Boolean bval;
+            if (!this.m_isflag || this.m_flagname == null || 
+                this.m_type == "args") {
+                this.__throw_exception(String.Format("can not set ({0}) longopt", this.m_origkey));
+            }
+            c = this.m_longprefix;
+            if (this.m_type == "bool") {
+                bval = (Boolean) this.m_value;
+                if (bval) {
+                    c += "no-";
+                }
+            }
+
+            if (this.m_prefix.Length > 0 && 
+                this.m_type != "help") {
+                c += String.Format("{0}_",this.m_prefix);
+            }
+
+            c += this.m_flagname;
+            if (! this.m_nochange) {
+                c = c.ToLower();
+                c = c.Replace("_","-");
+            }
+            return c;
+        }
+        set {
+            this.__throw_exception(String.Format("Longopt can not set"));
+        }
+    }
+
+    public Shortopt
+    {
+        get {
+
+        }
+        set {
+            this.__throw_exception(String.Format("Shortopt can not set"));   
+        }
+    }
+
+    private Boolean __cmp_attr(KeyCls other, string name)
+    {
+
+    }
+
     private bool eq_name(KeyCls other,string name)
     {   
         bool retval = false;
+
         
     }
 }
