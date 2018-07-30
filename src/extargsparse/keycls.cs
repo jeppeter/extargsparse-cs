@@ -296,32 +296,58 @@ public class KeyCls
             case "needarg":
                 return this.NeedArg;
             }
-        } else if (KeyCls.m_flagwords.Contains(name) || 
-            KeyCls.m_cmdwords.Contains(name) ||
-            KeyCls.m_flagspecial.Contains(name) ||
-            KeyCls.m_otherwords.Contains(name)) {
+        } else if (KeyCls.m_flagwords.Contains(name) ||
+                   KeyCls.m_cmdwords.Contains(name) ||
+                   KeyCls.m_flagspecial.Contains(name) ||
+                   KeyCls.m_otherwords.Contains(name)) {
             string kname = String.Format("m_{0}". name);
             Type t = typeof(KeyCls);
-            FieldInfo info = t.GetField(kname,BindingFlags.NonPublic | BindingFlags.Instance);
+            FieldInfo info = t.GetField(kname, BindingFlags.NonPublic | BindingFlags.Instance);
             return info.GetValue(this);
         }
         return null;
     }
 
-    private Boolean __eq_value(KeyCls other,string name)
+    private Boolean __eq_value(KeyCls other, string name)
     {
-        Object v,ov;
+        Object v, ov;
         v = this.__get_value(name);
         ov = other.__get_value(name);
-        
-
+        if (v == null && ov == null) {
+            return true;
+        } else if (v == null && ov != null) {
+            return false;
+        } else if (v != null && ov == null) {
+            return false;
+        } else  {
+            return v.Equals(ov);
+        }
     }
 
-    private bool equal(KeyCls other)
+    private Boolean __eq_array(KeyCls other, string[] narr)
     {
         Boolean bval = true;
-        foreach
+        foreach (string s in narr) {
+            bval = this.__eq_value(other,s)
+            if (!bval) {
+                return bval;
+            }
+        }
+        return bval;
+    }
 
+    public override Boolean Equals(KeyCls other)
+    {
+        Boolean bval = true;
+        bval = this.__eq_array(other, KeyCls.m_flagwords);
+        if (!bval) {
+            return bval;
+        }
+
+        bval = this.__eq_array(other, KeyCls.m_flagspecial);
+        if (!bval) {
+            return bval;
+        }
     }
 }
 
