@@ -18,11 +18,11 @@ public class KeyCls
 
 
     /*to get the flag words */
-    private static readonly string[] m_flagwords =  new string[] {"flagname","helpinfo", "shortflag", "nargs", "varname"};
+    private static readonly string[] m_flagwords =  new string[] {"flagname", "helpinfo", "shortflag", "nargs", "varname"};
     private static readonly string[] m_flagspecial = new string[] {"value", "prefix"};
-    private static readonly string[] m_cmdwords = new string[] {"cmdname","function","helpinfo"};
-    private static readonly string[] m_otherwords = new string[] {"origkey","iscmd", "isflag", "type","attr","longprefix", "shortprefix"};
-    private static readonly string[] m_formwords = new string[]{"longopt","shortopt","optdest","needarg"};
+    private static readonly string[] m_cmdwords = new string[] {"cmdname", "function", "helpinfo"};
+    private static readonly string[] m_otherwords = new string[] {"origkey", "iscmd", "isflag", "type", "attr", "longprefix", "shortprefix"};
+    private static readonly string[] m_formwords = new string[] {"longopt", "shortopt", "optdest", "needarg"};
 
     protected class KeyAttr
     {
@@ -190,8 +190,8 @@ public class KeyCls
         get {
             string c = "";
             Boolean bval;
-            if (!this.m_isflag || this.m_flagname == null || 
-                this.m_type == "args") {
+            if (!this.m_isflag || this.m_flagname == null ||
+                    this.m_type == "args") {
                 this.__throw_exception(String.Format("can not set ({0}) Longopt", this.m_origkey));
             }
             c = this.m_longprefix;
@@ -202,19 +202,18 @@ public class KeyCls
                 }
             }
 
-            if (this.m_prefix.Length > 0 && 
-                this.m_type != "help") {
-                c += String.Format("{0}_",this.m_prefix);
+            if (this.m_prefix.Length > 0 &&
+                    this.m_type != "help") {
+                c += String.Format("{0}_", this.m_prefix);
             }
 
             c += this.m_flagname;
             if (! this.m_nochange) {
                 c = c.ToLower();
-                c = c.Replace("_","-");
+                c = c.Replace("_", "-");
             }
             return c;
-        }
-        set {
+        } set {
             this.__throw_exception(String.Format("Longopt can not set"));
         }
     }
@@ -223,30 +222,29 @@ public class KeyCls
     {
         get {
             string c = null;
-            if (!this.m_isflag || 
-                this.m_flagname == null ||
-                this.m_type == "args") {
-                this.__throw_exception(String.Format("can not set ({0}) Shortopt",this.m_origkey));
+            if (!this.m_isflag ||
+                    this.m_flagname == null ||
+                    this.m_type == "args") {
+                this.__throw_exception(String.Format("can not set ({0}) Shortopt", this.m_origkey));
             }
 
             if (this.m_shortflag != null) {
                 c = String.Format("{0}{1}", this.m_shortprefix, this.m_shortflag);
             }
             return c;
-        }
-        set {
-            this.__throw_exception(String.Format("Shortopt can not set"));   
+        } set {
+            this.__throw_exception(String.Format("Shortopt can not set"));
         }
     }
 
     public string Optdest
     {
         get {
-            string c="";
-            if (!this.m_isflag || 
-                this.m_flagname == null ||
-                this.m_type == "args") {
-                this.__throw_exception(String.Format("can not set ({0}) Optdest",this.m_origkey));
+            string c = "";
+            if (!this.m_isflag ||
+                    this.m_flagname == null ||
+                    this.m_type == "args") {
+                this.__throw_exception(String.Format("can not set ({0}) Optdest", this.m_origkey));
             }
             if (this.m_prefix.Length > 0) {
                 c += String.Format("{0}_", this.m_prefix);
@@ -255,7 +253,7 @@ public class KeyCls
             if (! this.m_nochange) {
                 c = c.ToLower();
             }
-            c = c.Replace("-","_");
+            c = c.Replace("-", "_");
             return c;
         }
 
@@ -264,7 +262,7 @@ public class KeyCls
         }
     }
 
-    public int NeedArg 
+    public int NeedArg
     {
         get {
             if (!this.m_isflag) {
@@ -272,31 +270,44 @@ public class KeyCls
             }
 
             if (this.m_type == "int" ||
-                this.m_type == "list" || 
-                this.m_type == "long" ||
-                this.m_type == "float" || 
-                this.m_type == "string" ||
-                this.m_type == "jsonfile") {
+                    this.m_type == "list" ||
+                    this.m_type == "long" ||
+                    this.m_type == "float" ||
+                    this.m_type == "string" ||
+                    this.m_type == "jsonfile") {
                 return 1;
             }
             return 0;
-        }
-        set {
+        } set {
             this.__throw_exception(String.Format("NeedArg can not set"));
         }
     }
 
-
-    private Boolean __cmp_attr(KeyCls other, string name)
+    private Object __get_value(KeyCls pthis, string name)
     {
-
+        if (KeyCls.m_flagwords.Contains(name)) {
+            switch (name) {
+            case "longopt":
+                return pthis.Longopt;
+            case "shortopt":
+                return pthis.Shortopt;
+            case "optdest":
+                return pthis.Optdest;
+            case "needarg":
+                return pthis.NeedArg;
+            }
+        } else if (KeyCls.m_flagwords.Contains(name)) {
+            switch(name) {
+                
+            }
+        }
     }
 
-    private bool eq_name(KeyCls other,string name)
-    {   
-        bool retval = false;
+    private bool equal(KeyCls other)
+    {
+        Boolean bval = true;
+        foreach
 
-        
     }
 }
 
