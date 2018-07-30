@@ -192,7 +192,7 @@ public class KeyCls
             Boolean bval;
             if (!this.m_isflag || this.m_flagname == null || 
                 this.m_type == "args") {
-                this.__throw_exception(String.Format("can not set ({0}) longopt", this.m_origkey));
+                this.__throw_exception(String.Format("can not set ({0}) Longopt", this.m_origkey));
             }
             c = this.m_longprefix;
             if (this.m_type == "bool") {
@@ -219,15 +219,73 @@ public class KeyCls
         }
     }
 
-    public Shortopt
+    public string Shortopt
     {
         get {
+            string c = null;
+            if (!this.m_isflag || 
+                this.m_flagname == null ||
+                this.m_type == "args") {
+                this.__throw_exception(String.Format("can not set ({0}) Shortopt",this.m_origkey));
+            }
 
+            if (this.m_shortflag != null) {
+                c = String.Format("{0}{1}", this.m_shortprefix, this.m_shortflag);
+            }
+            return c;
         }
         set {
             this.__throw_exception(String.Format("Shortopt can not set"));   
         }
     }
+
+    public string Optdest
+    {
+        get {
+            string c="";
+            if (!this.m_isflag || 
+                this.m_flagname == null ||
+                this.m_type == "args") {
+                this.__throw_exception(String.Format("can not set ({0}) Optdest",this.m_origkey));
+            }
+            if (this.m_prefix.Length > 0) {
+                c += String.Format("{0}_", this.m_prefix);
+            }
+            c += this.m_flagname;
+            if (! this.m_nochange) {
+                c = c.ToLower();
+            }
+            c = c.Replace("-","_");
+            return c;
+        }
+
+        set {
+            this.__throw_exception(String.Format("Optdest can not set"));
+        }
+    }
+
+    public int NeedArg 
+    {
+        get {
+            if (!this.m_isflag) {
+                return 0;
+            }
+
+            if (this.m_type == "int" ||
+                this.m_type == "list" || 
+                this.m_type == "long" ||
+                this.m_type == "float" || 
+                this.m_type == "string" ||
+                this.m_type == "jsonfile") {
+                return 1;
+            }
+            return 0;
+        }
+        set {
+            this.__throw_exception(String.Format("NeedArg can not set"));
+        }
+    }
+
 
     private Boolean __cmp_attr(KeyCls other, string name)
     {
