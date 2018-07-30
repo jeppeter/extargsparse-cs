@@ -283,24 +283,38 @@ public class KeyCls
         }
     }
 
-    private Object __get_value(KeyCls pthis, string name)
+    private Object __get_value(string name)
     {
         if (KeyCls.m_flagwords.Contains(name)) {
             switch (name) {
             case "longopt":
-                return pthis.Longopt;
+                return this.Longopt;
             case "shortopt":
-                return pthis.Shortopt;
+                return this.Shortopt;
             case "optdest":
-                return pthis.Optdest;
+                return this.Optdest;
             case "needarg":
-                return pthis.NeedArg;
+                return this.NeedArg;
             }
-        } else if (KeyCls.m_flagwords.Contains(name)) {
-            switch(name) {
-                
-            }
+        } else if (KeyCls.m_flagwords.Contains(name) || 
+            KeyCls.m_cmdwords.Contains(name) ||
+            KeyCls.m_flagspecial.Contains(name) ||
+            KeyCls.m_otherwords.Contains(name)) {
+            string kname = String.Format("m_{0}". name);
+            Type t = typeof(KeyCls);
+            FieldInfo info = t.GetField(kname,BindingFlags.NonPublic | BindingFlags.Instance);
+            return info.GetValue(this);
         }
+        return null;
+    }
+
+    private Boolean __eq_value(KeyCls other,string name)
+    {
+        Object v,ov;
+        v = this.__get_value(name);
+        ov = other.__get_value(name);
+        
+
     }
 
     private bool equal(KeyCls other)
