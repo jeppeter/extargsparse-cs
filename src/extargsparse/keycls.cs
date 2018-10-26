@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
+using System.Reflection;
 using Newtonsoft.Json.Linq;
 
 
@@ -27,7 +28,7 @@ public class KeyCls
     protected class KeyAttr
     {
         private char m_splitchar = ';';
-        private Dictionary<string, string> m_obj;
+        private Dictionary<string, string> m_obj = new Dictionary<string,string>();
         private static readonly string SPLIT_START = "split=";
 
         public KeyAttr(string instr)
@@ -57,7 +58,7 @@ public class KeyCls
                     continue;
                 }
                 kv = vstr[i].Split('=');
-                if (kv < 2) {
+                if (kv.Length < 2) {
                     this.m_obj.Add(kv[0], "");
                 } else {
                     this.m_obj.Add(kv[0], kv[1]);
@@ -73,14 +74,14 @@ public class KeyCls
             return String.Empty;
         }
 
-        public string ToString()
+        public override string ToString()
         {
             string rets;
             int i;
-            Dictionary<string, string>.KeyCollection  k ;
+
             rets = "{";
             i = 0;
-            for (k in this.m_obj.Keys) {
+            foreach (KeyValuePair<string, string>  k in this.m_obj) {
                 if (i > 0) {
                     rets += ";";
                 }
@@ -106,19 +107,18 @@ public class KeyCls
                 case JTokenType.Integer:
                     this.typename = "int";
                     break;
-                case JTokenType.Double:
+                case JTokenType.Float:
                     this.typename = "float";
                     break;
                 case JTokenType.String:
                 case JTokenType.Null:
-                    this.typename = "string"
-                                    break;
+                    this.typename = "string";
+                    break;
                 case JTokenType.Boolean:
                     this.typename = "bool";
                     break;
                 default:
                     throw new KeyException(String.Format("unknown jvalue type [{0}]", val.Type));
-                    break;
                 }
             } else if (valtype == "Newtonsoft.Json.Linq.JArray") {
                 this.typename = "list";
@@ -134,7 +134,7 @@ public class KeyCls
             return this.typename;
         }
 
-        public string ToString()
+        public override string ToString()
         {
             return this.typename;
         }
@@ -150,8 +150,8 @@ public class KeyCls
     private string m_cmdname = null;
     private string m_function = null;
     private string m_origkey = null;
-    private bool m_iscmd = null;
-    private bool m_isflag = null;
+    private bool m_iscmd = false;
+    private bool m_isflag = false;
     private string m_type = null;
     private KeyAttr m_attr = null;
     private bool m_nochange = false;
@@ -160,6 +160,10 @@ public class KeyCls
 
     private void __reset()
     {
+        string v;
+        KeyAttr va;
+        bool bv;
+        object ov;
         this.m_value = null;
         this.m_prefix = null;
         this.m_flagname = null;
@@ -177,12 +181,33 @@ public class KeyCls
         this.m_nochange = false;
         this.m_longprefix = "--";
         this.m_shortprefix = "-";
+
+        v = this.m_cmdname;
+        this.m_cmdname = v;
+
+        bv = this.m_iscmd;
+        this.m_iscmd = bv;
+
+        v = this.m_function;
+        this.m_function = v;
+
+        v = this.m_varname;
+        this.m_varname = v;
+
+        v = this.m_helpinfo;
+        this.m_helpinfo = v;
+
+        va = this.m_attr;
+        this.m_attr = va;
+        ov = this.m_nargs;
+        this.m_nargs = ov;
+
         return;
     }
 
     private void __throw_exception(string fmt)
     {
-        new throw KeyException(fmt);
+        throw new KeyException(fmt);
     }
 
     public string Longopt
@@ -285,7 +310,7 @@ public class KeyCls
 
     private Object __get_value(string name)
     {
-        if (KeyCls.m_flagwords.Contains(name)) {
+        if (Array.IndexOf(KeyCls.m_flagwords,name) >= 0) {
             switch (name) {
             case "longopt":
                 return this.Longopt;
@@ -296,11 +321,11 @@ public class KeyCls
             case "needarg":
                 return this.NeedArg;
             }
-        } else if (KeyCls.m_flagwords.Contains(name) ||
-                   KeyCls.m_cmdwords.Contains(name) ||
-                   KeyCls.m_flagspecial.Contains(name) ||
-                   KeyCls.m_otherwords.Contains(name)) {
-            string kname = String.Format("m_{0}". name);
+        } else if ( Array.IndexOf(KeyCls.m_flagwords, name) >= 0 || 
+                   Array.IndexOf(KeyCls.m_cmdwords, name) >= 0 || 
+                   Array.IndexOf(KeyCls.m_flagspecial, name) >= 0 || 
+                   Array.IndexOf(KeyCls.m_otherwords, name) >= 0 ){ 
+            string kname = String.Format("m_{0}", name);
             Type t = typeof(KeyCls);
             FieldInfo info = t.GetField(kname, BindingFlags.NonPublic | BindingFlags.Instance);
             return info.GetValue(this);
@@ -328,7 +353,7 @@ public class KeyCls
     {
         Boolean bval = true;
         foreach (string s in narr) {
-            bval = this.__eq_value(other,s)
+            bval = this.__eq_value(other, s);
             if (!bval) {
                 return bval;
             }
@@ -336,7 +361,7 @@ public class KeyCls
         return bval;
     }
 
-    public override Boolean Equals(KeyCls other)
+    public Boolean Equals(KeyCls other)
     {
         Boolean bval = true;
         bval = this.__eq_array(other, KeyCls.m_flagwords);
@@ -348,6 +373,7 @@ public class KeyCls
         if (!bval) {
             return bval;
         }
+        return true;
     }
 }
 
