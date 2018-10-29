@@ -386,6 +386,7 @@ public class KeyCls
         int cnt = 0;
         MatchCollection ms;
         string []sarr;
+        Regex spexpr = new Regex("\\|");
         this.m_origkey = key;
         if (this.m_origkey.Contains("$")) {
             if (this.m_origkey[0] != '$') {
@@ -424,12 +425,42 @@ public class KeyCls
             }
             if (flags != "") {
                 if (flags.Contains("|")) {
-                    Regex spexpr = new Regex("\\|");
                     sarr = spexpr.Split(flags);
                     if (sarr.Length > 2 || sarr[1].Length != 1 || sarr[0].Length <= 1) {
                         this.__throw_exception(String.Format("({0}) ({1})flag only accept (longop|l) format", this.m_origkey, flags));
                     }
+                    this.m_flagname = sarr[0];
+                    this.m_shortflag = sarr[1];
+                } else {
+                    this.m_flagname = flags;
                 }
+                flagmode = true;
+            }
+        } else {
+            ms = KeyCls.m_mustflagexpr.Matches(this.m_origkey);
+            if (ms.Count > 1) {
+                flags = ms[1].Value;
+                if (flags.Contains("|")) {
+                    sarr = spexpr.Split(flags);
+                    if (sarr.Length > 2 || sarr[1].Length > 1 || sarr[0].Length <= 1) {
+                        this.__throw_exception(String.Format("({0}) ({1})flag only accept (longop|l) format", this.m_origkey, flags));
+                    }
+                    this.m_flagname = sarr[0];
+                    this.m_shortflag = sarr[1];
+                } else {
+                    if (flags.Length <= 1) {
+                        this.__throw_exception(String.Format("({0}) flag must have long opt", this.m_origkey));
+                    }
+                    this.m_flagname = flags;
+                }
+                flagmode = true;
+            } else if (this.m_origkey[0] == '$') {
+                this.m_flagname = "$";
+                flagmode = true;
+            }
+            ms = KeyCls.m_cmdexpr.Matches(this.m_origkey);
+            if (ms.Count > 1) {
+                
             }
         }
         return;
