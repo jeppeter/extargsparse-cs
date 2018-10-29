@@ -385,6 +385,7 @@ public class KeyCls
         bool ok = false;
         int cnt = 0;
         MatchCollection ms;
+        string []sarr;
         this.m_origkey = key;
         if (this.m_origkey.Contains("$")) {
             if (this.m_origkey[0] != '$') {
@@ -401,7 +402,7 @@ public class KeyCls
                 ok = false;
             }
             if (!ok) {
-                this.__throw_exception(String.Format("[{0}] not valid key double \"$\"", this.m_origkey));
+                this.__throw_exception(String.Format("({0}) has ($) more than one", this.m_origkey));
             }
         }
 
@@ -423,7 +424,11 @@ public class KeyCls
             }
             if (flags != "") {
                 if (flags.Contains("|")) {
-                    
+                    Regex spexpr = new Regex("\\|");
+                    sarr = spexpr.Split(flags);
+                    if (sarr.Length > 2 || sarr[1].Length != 1 || sarr[0].Length <= 1) {
+                        this.__throw_exception(String.Format("({0}) ({1})flag only accept (longop|l) format", this.m_origkey, flags));
+                    }
                 }
             }
         }
