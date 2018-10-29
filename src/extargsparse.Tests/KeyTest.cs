@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using extargsparse;
 
 namespace extargsparse_Tests
 {
@@ -11,7 +12,7 @@ namespace extargsparse_Tests
 
 
         [Test]
-        public void Test1()
+        public void test_A001()
         {
             Assert.Pass();
         }

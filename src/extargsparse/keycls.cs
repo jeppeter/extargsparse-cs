@@ -2,6 +2,7 @@
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using System.Reflection;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 
@@ -28,7 +29,7 @@ public class KeyCls
     protected class KeyAttr
     {
         private char m_splitchar = ';';
-        private Dictionary<string, string> m_obj = new Dictionary<string,string>();
+        private Dictionary<string, string> m_obj = new Dictionary<string, string>();
         private static readonly string SPLIT_START = "split=";
 
         public KeyAttr(string instr)
@@ -140,7 +141,7 @@ public class KeyCls
         }
     }
 
-    private object m_value = null;
+    private JToken m_value = null;
     private string m_prefix = null;
     private string m_flagname = null;
     private string m_helpinfo = null;
@@ -310,7 +311,7 @@ public class KeyCls
 
     private Object __get_value(string name)
     {
-        if (Array.IndexOf(KeyCls.m_flagwords,name) >= 0) {
+        if (Array.IndexOf(KeyCls.m_flagwords, name) >= 0) {
             switch (name) {
             case "longopt":
                 return this.Longopt;
@@ -321,10 +322,10 @@ public class KeyCls
             case "needarg":
                 return this.NeedArg;
             }
-        } else if ( Array.IndexOf(KeyCls.m_flagwords, name) >= 0 || 
-                   Array.IndexOf(KeyCls.m_cmdwords, name) >= 0 || 
-                   Array.IndexOf(KeyCls.m_flagspecial, name) >= 0 || 
-                   Array.IndexOf(KeyCls.m_otherwords, name) >= 0 ){ 
+        } else if ( Array.IndexOf(KeyCls.m_flagwords, name) >= 0 ||
+                    Array.IndexOf(KeyCls.m_cmdwords, name) >= 0 ||
+                    Array.IndexOf(KeyCls.m_flagspecial, name) >= 0 ||
+                    Array.IndexOf(KeyCls.m_otherwords, name) >= 0 ) {
             string kname = String.Format("m_{0}", name);
             Type t = typeof(KeyCls);
             FieldInfo info = t.GetField(kname, BindingFlags.NonPublic | BindingFlags.Instance);
@@ -374,6 +375,61 @@ public class KeyCls
             return bval;
         }
         return true;
+    }
+
+    private void __parse(string prefix,string key, JToken value,bool isflag, bool ishelp,bool isjsonfile)
+    {
+        //bool flagmode = false;
+        //bool cmdmode = false;
+        //string flags = "";
+        bool ok = false;
+        int cnt=0;
+        this.m_origkey = key;
+        if (this.m_origkey.Contains("$")) {
+            if (this.m_origkey[0] != '$') {
+                this.__throw_exception(String.Format("[{0}] not valid key", this.m_origkey));
+            }
+            ok = true;
+            cnt = 0;
+            foreach(char ch in this.m_origkey) {
+                if (ch == '$') {
+                    cnt ++;
+                }
+            }
+            if (cnt > 1) {
+                ok = false;
+            }
+            if (!ok) {
+                this.__throw_exception(String.Format("[{0}] not valid key double \"$\"", this.m_origkey));
+            }
+        }
+
+        if (isflag || ishelp || isjsonfile) {
+            
+        }
+        return;
+    }
+
+
+    public KeyCls(string prefix, string key, JToken value, bool isflag = false, bool ishelp=false,
+                bool isjsonfile = false, string longprefix = "--",
+                string shortprefix = "-", bool nochange = false)
+    {
+        string valtype;
+        TypeClass typcls;
+        this.__reset();
+        typcls = new TypeClass(key);
+        valtype = typcls.get_type();
+
+        this.m_origkey = key;
+        this.m_longprefix = longprefix;
+        this.m_shortprefix = shortprefix;
+        this.m_nochange = nochange;
+        if (valtype == "dict") {
+            this.__throw_exception(String.Format("key not accept dict[{0}]", key));
+        } else {
+            this.__parse(prefix,key,value,isflag,ishelp,isjsonfile);
+        }
     }
 }
 
