@@ -377,13 +377,14 @@ public class KeyCls
         return true;
     }
 
-    private void __parse(string prefix,string key, JToken value,bool isflag, bool ishelp,bool isjsonfile)
+    private void __parse(string prefix, string key, JToken value, bool isflag, bool ishelp, bool isjsonfile)
     {
-        //bool flagmode = false;
+        bool flagmode = false;
         //bool cmdmode = false;
-        //string flags = "";
+        string flags = "";
         bool ok = false;
-        int cnt=0;
+        int cnt = 0;
+        MatchCollection ms;
         this.m_origkey = key;
         if (this.m_origkey.Contains("$")) {
             if (this.m_origkey[0] != '$') {
@@ -391,7 +392,7 @@ public class KeyCls
             }
             ok = true;
             cnt = 0;
-            foreach(char ch in this.m_origkey) {
+            foreach (char ch in this.m_origkey) {
                 if (ch == '$') {
                     cnt ++;
                 }
@@ -405,15 +406,34 @@ public class KeyCls
         }
 
         if (isflag || ishelp || isjsonfile) {
-            
+            ms = KeyCls.m_flagexpr.Matches(this.m_origkey);
+            if (ms.Count > 1) {
+                flags = ms[1].Value;
+            }
+            if (flags == "") {
+                ms = KeyCls.m_mustflagexpr.Matches(this.m_origkey);
+                if (ms.Count > 1) {
+                    flags = ms[1].Value;
+                }
+            }
+
+            if (flags == "" && this.m_origkey[0] == '$') {
+                this.m_flagname = "$";
+                flagmode = true;
+            }
+            if (flags != "") {
+                if (flags.Contains("|")) {
+                    
+                }
+            }
         }
         return;
     }
 
 
-    public KeyCls(string prefix, string key, JToken value, bool isflag = false, bool ishelp=false,
-                bool isjsonfile = false, string longprefix = "--",
-                string shortprefix = "-", bool nochange = false)
+    public KeyCls(string prefix, string key, JToken value, bool isflag = false, bool ishelp = false,
+                  bool isjsonfile = false, string longprefix = "--",
+                  string shortprefix = "-", bool nochange = false)
     {
         string valtype;
         TypeClass typcls;
@@ -428,7 +448,7 @@ public class KeyCls
         if (valtype == "dict") {
             this.__throw_exception(String.Format("key not accept dict[{0}]", key));
         } else {
-            this.__parse(prefix,key,value,isflag,ishelp,isjsonfile);
+            this.__parse(prefix, key, value, isflag, ishelp, isjsonfile);
         }
     }
 }
