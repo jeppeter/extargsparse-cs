@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-
+using System.Diagnostics;
 
 namespace extargsparse
 {
@@ -380,12 +380,14 @@ public class KeyCls
     private void __parse(string prefix, string key, JToken value, bool isflag, bool ishelp, bool isjsonfile)
     {
         bool flagmode = false;
-        //bool cmdmode = false;
+        bool cmdmode = false;
         string flags = "";
+        string newprefix = "";
         bool ok = false;
         int cnt = 0;
         MatchCollection ms;
         string []sarr;
+        TypeClass typcls;
         Regex spexpr = new Regex("\\|");
         this.m_origkey = key;
         if (this.m_origkey.Contains("$")) {
@@ -460,9 +462,87 @@ public class KeyCls
             }
             ms = KeyCls.m_cmdexpr.Matches(this.m_origkey);
             if (ms.Count > 1) {
-                
+                Debug.Assert(! flagmode);
+                if (ms[0].Value.Contains("|")) {
+                    flags = ms[1].Value;
+                    if (flags.Contains("|")) {
+                        sarr = spexpr.Split(flags);
+                        if (sarr.Length > 2 || sarr[0].Length <= 1 || sarr[1].Length != 1) {
+                            this.__throw_exception(String.Format("({0}) ({1})flag only accept (longop|l) format", this.m_origkey, flags));
+                        }
+                        this.m_flagname = sarr[0];
+                        this.m_shortflag = sarr[1];
+                    } else {
+                        Debug.Assert(false);
+                    }
+                    flagmode = true;
+                } else {
+                    this.m_cmdname = ms[0].Value;
+                    cmdmode = true;
+                }
             }
         }
+        ms = KeyCls.m_helpexpr.Matches(this.m_origkey);
+        if (ms.Count > 1) {
+            this.m_helpinfo = ms[1].Value;
+        }
+        newprefix = "";
+        if (prefix.Length > 0) {
+            newprefix = prefix;
+        }
+        ms = KeyCls.m_prefixexpr.Matches(this.m_origkey);
+        if (ms.Count > 1) {
+            if (newprefix.Length > 0) {
+                newprefix += "_";
+            }
+            newprefix += ms[1].Value;
+            this.m_prefix = newprefix;
+        } else {
+            if (newprefix.Length > 0) {
+                this.m_prefix = newprefix;
+            }
+        }
+        if (flagmode) {
+            this.m_isflag = true;
+            this.m_iscmd = false;
+        }
+        if (cmdmode) {
+            this.m_isflag = false;
+            this.m_iscmd = true;
+        }
+
+        if (!this.m_isflag && !this.m_iscmd) {
+            /*default is flag*/
+            this.m_isflag = true;
+            this.m_iscmd = false;
+        }
+
+        this.m_value = value;
+        if (! ishelp && ! isjsonfile) {
+            typcls = new TypeClass(value);
+            this.m_type = typcls.get_type();
+        } else if (ishelp) {
+            this.m_type = "help";
+            this.m_nargs = 0;
+        } else if (isjsonfile) {
+            this.m_type = "jsonfile";
+            this.m_nargs = 1;
+        }
+
+        if (this.m_type == "help" && value != null) {
+            this.__throw_exception(String.Format("help type must be value None"));
+        }
+        if (cmdmode && this.m_type != "dict") {
+            flagmode = true;
+            cmdmode = false;
+            this.m_isflag = true;
+            this.m_iscmd = false;
+            this.m_flagname = this.m_cmdname;
+            this.m_cmdname = "";
+        }
+
+        
+
         return;
     }
 
