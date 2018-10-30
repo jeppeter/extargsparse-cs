@@ -389,6 +389,8 @@ public class KeyCls
         string []sarr;
         TypeClass typcls;
         Regex spexpr = new Regex("\\|");
+        string valtype;
+        JValue jval;
         this.m_origkey = key;
         if (this.m_origkey.Contains("$")) {
             if (this.m_origkey[0] != '$') {
@@ -541,7 +543,22 @@ public class KeyCls
             this.m_cmdname = "";
         }
 
-        
+        if (this.m_isflag && this.m_type == "string" && this.m_flagname != "$") {
+            Debug.Assert(value != null);
+            valtype = value.GetType().FullName;
+            if (valtype == "Newtonsoft.Json.Linq.JValue") {
+                jval = value as JValue;
+                if (jval.Type == JTokenType.String) {
+                    if ((System.String)jval.Value == "+") {
+                        jval = new JValue(0);
+                        this.m_value = jval;
+                        this.m_type = "count";
+                        this.m_nargs = 0;
+                    }
+                }
+            }
+
+        }
 
         return;
     }
