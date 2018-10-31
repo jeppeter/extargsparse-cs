@@ -527,6 +527,31 @@ public class KeyCls
                     this.__throw_exception(String.Format("({0}) can not accept ({1})short flag in flagname", this.m_origkey, this.m_flagname));
                 }
             }
+            if (this.m_shortflag != "") {
+                if (this.m_shortflag.Length > 1) {
+                    this.__throw_exception(String.Format("({0}) can not accept ({0}) for shortflag", this.m_origkey, this.m_shortflag));
+                }
+            }
+
+            if (this.m_type == "bool") {
+                if (this.m_nargs != null ) {
+                    int ival;
+                    ival = (int) this.m_nargs;
+                    if (ival != 0) {
+                        this.__throw_exception(String.Format("bool type ({0}) can not accept not 0 nargs", this.m_nargs));    
+                    }                    
+                }
+                this.m_nargs = 0;
+            } else if (this.m_type == "help")  {
+                if (this.m_nargs != null) {
+                    int ival;
+                    ival = (int) this.m_nargs;
+                    if (ival != 0) {
+                        this.__throw_exception(String.Format("help type ({0}) can not accept not 0 nargs", this.m_nargs));    
+                    }                    
+                }
+                this.m_nargs = 0;
+            }
         }
     }
 
