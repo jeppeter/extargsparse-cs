@@ -482,6 +482,54 @@ public class KeyCls
         return;
     }
 
+    private void __validate()
+    {
+        TypeClass typcls;
+        if (this.m_isflag) {
+            Debug.Assert(! this.m_iscmd);
+            if (this.m_function != "") {
+                this.__throw_exception(String.Format("({0}) can not accept function", this.m_origkey));
+            }
+            if (this.m_type == "dict" && this.m_flagname != "") {
+                this.__throw_exception(String.Format("({0}) flag can not accept dict", this.m_origkey));
+            }
+            typcls = new TypeClass(this.m_value);
+            if (this.m_type != typcls.get_type() && this.m_type != "count" && 
+                this.m_type != "help" && this.m_type != "jsonfile") {
+                this.__throw_exception(String.Format("({0}) value ({1}) not match type ({2})", this.m_origkey,
+                    this.m_value, this.m_type));
+            }
+
+            if (this.m_flagname == "") {
+                if (this.m_prefix == "") {
+                    this.__throw_exception(String.Format("({0}) should at least for prefix", this.m_origkey));
+                }
+                this.m_type = "prefix";
+                typcls = new TypeClass(this.m_value);
+                if (typcls.get_type() != "dict") {
+                    this.__throw_exception(String.Format("({0}) should used dict to make prefix", this.m_origkey));
+                }
+
+                if (this.m_helpinfo != "") {
+                    this.__throw_exception(String.Format("({0}) should not have help info", this.m_origkey));
+                }
+
+                if (this.m_shortflag != "") {
+                    this.__throw_exception(String.Format("({0}) should not set shortflag", this.m_origkey));
+                }
+            } else if (this.m_flagname == "$") {
+                this.m_type = "args";
+                if (this.m_shortflag != "") {
+                    this.__throw_exception(String.Format("({0}) can not set shortflag for args",this.m_origkey));
+                }
+            } else {
+                if (this.m_flagname.Length <= 0) {
+                    this.__throw_exception(String.Format("({0}) can not accept ({1})short flag in flagname", this.m_origkey, this.m_flagname));
+                }
+            }
+        }
+    }
+
     private void __parse(string prefix, string key, JToken value, bool isflag, bool ishelp, bool isjsonfile)
     {
         bool flagmode = false;
@@ -686,6 +734,22 @@ public class KeyCls
         if (this.m_isflag && this.m_type == "dict" && this.m_flagname != "") {
             this.__set_flag(prefix, key, value);
         }
+
+        ms = KeyCls.m_attrexpr.Matches(this.m_origkey);
+        if (ms.Count > 1) {
+            this.m_attr = new KeyAttr(ms[1].Value);
+        }
+
+        ms = KeyCls.m_funcexpr.Matches(this.m_origkey);
+        if (ms.Count > 1) {
+            if (this.m_isflag) {
+                this.m_varname = ms[1].Value;
+            } else {
+                this.m_function = ms[1].Value;
+            }
+        }
+
+        this.__validate();
 
         return;
     }
