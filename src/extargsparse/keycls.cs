@@ -334,6 +334,20 @@ public class KeyCls
         return null;
     }
 
+    private void __set_value(string k, object v)
+    {
+        if (Array.IndexOf(KeyCls.m_flagwords, k) >= 0 ||
+            Array.IndexOf(KeyCls.m_cmdwords, k) >= 0 ||
+            Array.IndexOf(KeyCls.m_flagspecial,k) >= 0 ||
+            Array.IndexOf(KeyCls.m_otherwords,k) >= 0) {
+            string kname = String.Format("m_{0}", k);
+            Type t  = typeof(KeyCls);
+            FieldInfo info = t.GetField(kname, BindingFlags.NonPublic | BindingFlags.Instance);
+            info.SetValue(this,v);
+        }
+        this.__throw_exception(String.Format("{0} not support key", k));
+    }
+
     private Boolean __eq_value(KeyCls other, string name)
     {
         Object v, ov;
@@ -378,6 +392,17 @@ public class KeyCls
         return true;
     }
 
+    private bool __object_equal(object a , object b)
+    {
+        string atype,btype;
+        atype = a.GetType().FullName;
+        btype = b.GetType().FullName;
+        if (atype != btype) {
+            return false;
+        }
+        return a.Equals(b);
+    }
+
     private void __set_flag(string prefix, string key, JToken value)
     {
         JObject jobj;
@@ -385,7 +410,9 @@ public class KeyCls
         Dictionary<string, JToken> nobj;
         string k;
         int i;
-        object gv,v;
+        object gv;
+        JToken v;
+        TypeClass typcls ;
         this.m_isflag = true;
         this.m_iscmd = false;
         this.m_origkey = key;
@@ -401,8 +428,15 @@ public class KeyCls
         for (i=0;i<keys.Count ;i++) {
             k = keys[i];
             if (Array.IndexOf(KeyCls.m_flagwords,k) >= 0) {
-                v = nobj[k];
+                v = nobj[k] ;
                 gv = this.__get_value(k);
+                if (gv.Equals("") && !this.__object_equal(v,gv)) {
+                    this.__throw_exception(String.Format("set ({0}) for not equal value ({1}) ({2})", k , v,gv));
+                }
+                typcls = new TypeClass(v);
+                if (!(typcls.get_type() != "string" && typcls.get_type() != "int")) {
+                    this.__throw_exception(String.Format("({0})({1})({2}) can not take other than int or string ({3})",this.m_origkey,k,v,typcls.get_type()));
+                }
             }
         }
 
