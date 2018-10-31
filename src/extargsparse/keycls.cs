@@ -337,13 +337,13 @@ public class KeyCls
     private void __set_value(string k, object v)
     {
         if (Array.IndexOf(KeyCls.m_flagwords, k) >= 0 ||
-            Array.IndexOf(KeyCls.m_cmdwords, k) >= 0 ||
-            Array.IndexOf(KeyCls.m_flagspecial,k) >= 0 ||
-            Array.IndexOf(KeyCls.m_otherwords,k) >= 0) {
+                Array.IndexOf(KeyCls.m_cmdwords, k) >= 0 ||
+                Array.IndexOf(KeyCls.m_flagspecial, k) >= 0 ||
+                Array.IndexOf(KeyCls.m_otherwords, k) >= 0) {
             string kname = String.Format("m_{0}", k);
             Type t  = typeof(KeyCls);
             FieldInfo info = t.GetField(kname, BindingFlags.NonPublic | BindingFlags.Instance);
-            info.SetValue(this,v);
+            info.SetValue(this, v);
         }
         this.__throw_exception(String.Format("{0} not support key", k));
     }
@@ -394,7 +394,7 @@ public class KeyCls
 
     private bool __object_equal(object a , object b)
     {
-        string atype,btype;
+        string atype, btype;
         atype = a.GetType().FullName;
         btype = b.GetType().FullName;
         if (atype != btype) {
@@ -412,7 +412,9 @@ public class KeyCls
         int i;
         object gv;
         JToken v;
+        JValue jval;
         TypeClass typcls ;
+        string strval;
         this.m_isflag = true;
         this.m_iscmd = false;
         this.m_origkey = key;
@@ -425,22 +427,59 @@ public class KeyCls
         nobj = jobj.ToObject<Dictionary<string, JToken>>();
         keys = new List<String>(nobj.Keys);
 
-        for (i=0;i<keys.Count ;i++) {
+        for (i = 0; i < keys.Count ; i++) {
             k = keys[i];
-            if (Array.IndexOf(KeyCls.m_flagwords,k) >= 0) {
+            if (Array.IndexOf(KeyCls.m_flagwords, k) >= 0) {
                 v = nobj[k] ;
                 gv = this.__get_value(k);
-                if (gv.Equals("") && !this.__object_equal(v,gv)) {
-                    this.__throw_exception(String.Format("set ({0}) for not equal value ({1}) ({2})", k , v,gv));
+                if (gv.Equals("") && !this.__object_equal(v, gv)) {
+                    this.__throw_exception(String.Format("set ({0}) for not equal value ({1}) ({2})", k , v, gv));
                 }
                 typcls = new TypeClass(v);
                 if (!(typcls.get_type() != "string" && typcls.get_type() != "int")) {
-                    this.__throw_exception(String.Format("({0})({1})({2}) can not take other than int or string ({3})",this.m_origkey,k,v,typcls.get_type()));
+                    this.__throw_exception(String.Format("({0})({1})({2}) can not take other than int or string ({3})", this.m_origkey, k, v, typcls.get_type()));
+                }
+                this.__set_value(k, v);
+            } else if (Array.IndexOf(KeyCls.m_flagspecial, k) >= 0) {
+                if (k == "prefix") {
+                    string newprefix;
+                    typcls = new TypeClass(nobj[k]);
+                    if (typcls.get_type() != "string") {
+                        this.__throw_exception(String.Format("({0}) prefix not string", nobj[k]));
+                    }
+                    jval = (JValue) nobj[k];
+                    switch (jval.Type) {
+                    case JTokenType.Null:
+                        this.__throw_exception(String.Format("{0} is None", k));
+                        break;
+                    }
+                    newprefix = "";
+                    if (prefix.Length > 0) {
+                        newprefix += String.Format("{0}_", prefix);
+                    }
+                    newprefix += (System.String)nobj[k] ;
+                    this.m_prefix = newprefix;
+                } else if (k == "value") {
+                    typcls = new TypeClass(nobj[k]);
+                    if (typcls.get_type() == "dict") {
+                        this.__throw_exception(String.Format("({0})({1}) can not accept dict", this.m_origkey, k));
+                    }
+                    this.m_value = nobj[k];
+                    this.m_type = typcls.get_type();
+                } else {
+                    this.__set_value(k, nobj[k]);
+                }
+            } else if (k == "attr") {
+                if (this.m_attr == null ) {
+                    strval = (string) nobj[k];
+                    this.m_attr = new KeyAttr(strval);
                 }
             }
         }
-
-
+        if (this.m_prefix == "" && prefix.Length > 0) {
+            this.m_prefix = prefix;
+        }
+        return;
     }
 
     private void __parse(string prefix, string key, JToken value, bool isflag, bool ishelp, bool isjsonfile)
@@ -645,7 +684,7 @@ public class KeyCls
         }
 
         if (this.m_isflag && this.m_type == "dict" && this.m_flagname != "") {
-            this.__set_flag(prefix,key,value);
+            this.__set_flag(prefix, key, value);
         }
 
         return;
