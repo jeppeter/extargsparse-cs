@@ -362,6 +362,7 @@ public class KeyCls
         return bval;
     }
 
+
     public Boolean Equals(KeyCls other)
     {
         Boolean bval = true;
@@ -375,6 +376,37 @@ public class KeyCls
             return bval;
         }
         return true;
+    }
+
+    private void __set_flag(string prefix, string key, JToken value)
+    {
+        JObject jobj;
+        List<String> keys;
+        Dictionary<string, JToken> nobj;
+        string k;
+        int i;
+        object gv,v;
+        this.m_isflag = true;
+        this.m_iscmd = false;
+        this.m_origkey = key;
+        Debug.Assert(value.GetType().FullName == "Newtonsoft.Json.Linq.JObject");
+        jobj = value.Value<JObject>();
+        if (jobj["value"] != null) {
+            this.m_value = null;
+            this.m_type = "string";
+        }
+        nobj = jobj.ToObject<Dictionary<string, JToken>>();
+        keys = new List<String>(nobj.Keys);
+
+        for (i=0;i<keys.Count ;i++) {
+            k = keys[i];
+            if (Array.IndexOf(KeyCls.m_flagwords,k) >= 0) {
+                v = nobj[k];
+                gv = this.__get_value(k);
+            }
+        }
+
+
     }
 
     private void __parse(string prefix, string key, JToken value, bool isflag, bool ishelp, bool isjsonfile)
@@ -557,7 +589,29 @@ public class KeyCls
                     }
                 }
             }
+        }
 
+        if (this.m_isflag && this.m_flagname == "$" && this.m_type != "dict") {
+            if (this.m_type == "string") {
+                string strval = (System.String)(this.m_value as JValue);
+                if (! "+*?".Contains(strval)) {
+                    this.__throw_exception(String.Format("{0} not valid for $", strval));
+                }
+                this.m_nargs = strval;
+                this.m_value = null;
+                this.m_type = "string";
+            } else if ( this.m_type == "int") {
+                int intval = (System.Int32) (this.m_value as JValue);
+                this.m_value = null;
+                this.m_type = "string";
+                this.m_nargs = intval;
+            } else {
+                this.__throw_exception(String.Format("({0})({1})({1}) for $ should option dict set opt or +?* specialcase or type int", prefix, this.m_origkey, this.m_value));
+            }
+        }
+
+        if (this.m_isflag && this.m_type == "dict" && this.m_flagname != "") {
+            this.__set_flag(prefix,key,value);
         }
 
         return;
