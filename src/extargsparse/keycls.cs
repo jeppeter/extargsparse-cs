@@ -485,6 +485,8 @@ public class KeyCls
     private void __validate()
     {
         TypeClass typcls;
+        string typestr;
+        int ival;
         if (this.m_isflag) {
             Debug.Assert(! this.m_iscmd);
             if (this.m_function != "") {
@@ -535,7 +537,6 @@ public class KeyCls
 
             if (this.m_type == "bool") {
                 if (this.m_nargs != null ) {
-                    int ival;
                     ival = (int) this.m_nargs;
                     if (ival != 0) {
                         this.__throw_exception(String.Format("bool type ({0}) can not accept not 0 nargs", this.m_nargs));    
@@ -544,13 +545,25 @@ public class KeyCls
                 this.m_nargs = 0;
             } else if (this.m_type == "help")  {
                 if (this.m_nargs != null) {
-                    int ival;
                     ival = (int) this.m_nargs;
                     if (ival != 0) {
                         this.__throw_exception(String.Format("help type ({0}) can not accept not 0 nargs", this.m_nargs));    
                     }                    
                 }
                 this.m_nargs = 0;
+            } else if (this.m_type != "prefix" && this.m_flagname != "$" && this.m_type != "count") {
+                if  (this.m_flagname != "$" && this.m_nargs != null) {
+                    typestr = this.m_nargs.GetType().FullName;
+                    if (typestr == "System.Int32") {
+                        ival = (int) this.m_nargs;
+                        if (ival != 1) {
+                            this.__throw_exception(String.Format("({0})only $ can accept nargs option", this.m_origkey));
+                        }
+                    }
+                }
+                this.m_nargs = 1;
+            } else if (this.m_flagname == "$" && this.m_nargs == null) {
+                this.m_nargs = "*";
             }
         }
     }
