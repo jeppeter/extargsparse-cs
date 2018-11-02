@@ -565,7 +565,37 @@ public class KeyCls
             } else if (this.m_flagname == "$" && this.m_nargs == null) {
                 this.m_nargs = "*";
             }
+        } else {
+            if (this.m_cmdname == "") {
+                this.__throw_exception(String.Format("({0}) not set cmdname",this.m_origkey));
+            }
+            if (this.m_shortflag != "") {
+                this.__throw_exception(String.Format("({0}) has shortflag ({0})", this.m_origkey, this.m_shortflag));
+            }
+            if (this.m_nargs != null) {
+                this.__throw_exception(String.Format("({0}) has nargs ({0})", this.m_origkey, this.m_nargs));
+            }
+            if (this.m_type != "dict") {
+                this.__throw_exception(String.Format("({0}) command must be dict", this.m_origkey));
+            }
+            if (this.m_prefix == "")  {
+                this.m_prefix  +=  this.m_cmdname;
+            }
+            this.m_type = "command";
         }
+
+        if (this.m_isflag && this.m_varname == "" && this.m_flagname != "") {
+            if (this.m_flagname != "$") {
+                this.m_varname = this.Optdest;
+            } else {
+                if (this.m_prefix.Length > 0) {
+                    this.m_varname = "subnargs";
+                } else {
+                    this.m_varname = "args";
+                }
+            }
+        }
+        return;
     }
 
     private void __parse(string prefix, string key, JToken value, bool isflag, bool ishelp, bool isjsonfile)
