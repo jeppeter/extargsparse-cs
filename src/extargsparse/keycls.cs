@@ -655,6 +655,7 @@ public class KeyCls
             }
 
             if (flags == "" && this.m_origkey[0] == '$') {
+                Console.Error.WriteLine("m_flagname $");
                 this.m_flagname = "$";
                 flagmode = true;
             }
@@ -664,15 +665,18 @@ public class KeyCls
                     if (sarr.Length > 2 || sarr[1].Length != 1 || sarr[0].Length <= 1) {
                         this.__throw_exception(String.Format("({0}) ({1})flag only accept (longop|l) format", this.m_origkey, flags));
                     }
+                    Console.Error.WriteLine("m_flagname [{0}]", sarr[0]);
                     this.m_flagname = sarr[0];
                     this.m_shortflag = sarr[1];
                 } else {
+                    Console.Error.WriteLine("m_flagname [{0}]", flags);
                     this.m_flagname = flags;
                 }
                 flagmode = true;
             }
         } else {
             ms = KeyCls.m_mustflagexpr.Matches(this.m_origkey);
+            Console.Error.WriteLine("ms [{0}] origkey [{1}]", ms.Count, this.m_origkey);
             if (ms.Count > 1) {
                 flags = ms[1].Value;
                 if (flags.Contains("|")) {
@@ -680,16 +684,19 @@ public class KeyCls
                     if (sarr.Length > 2 || sarr[1].Length > 1 || sarr[0].Length <= 1) {
                         this.__throw_exception(String.Format("({0}) ({1})flag only accept (longop|l) format", this.m_origkey, flags));
                     }
+                    Console.Error.WriteLine("m_flagname [{0}]", sarr[0]);
                     this.m_flagname = sarr[0];
                     this.m_shortflag = sarr[1];
                 } else {
                     if (flags.Length <= 1) {
                         this.__throw_exception(String.Format("({0}) flag must have long opt", this.m_origkey));
                     }
+                    Console.Error.WriteLine("m_flagname [{0}]", flags);
                     this.m_flagname = flags;
                 }
                 flagmode = true;
             } else if (this.m_origkey[0] == '$') {
+                Console.Error.WriteLine("m_flagname set [$]");
                 this.m_flagname = "$";
                 flagmode = true;
             }
@@ -703,6 +710,7 @@ public class KeyCls
                         if (sarr.Length > 2 || sarr[0].Length <= 1 || sarr[1].Length != 1) {
                             this.__throw_exception(String.Format("({0}) ({1})flag only accept (longop|l) format", this.m_origkey, flags));
                         }
+                        Console.Error.WriteLine("m_flagname [{0}]", sarr[0]);
                         this.m_flagname = sarr[0];
                         this.m_shortflag = sarr[1];
                     } else {
@@ -770,6 +778,7 @@ public class KeyCls
             cmdmode = false;
             this.m_isflag = true;
             this.m_iscmd = false;
+            Console.Error.WriteLine("m_flagname [{0}]", this.m_cmdname);
             this.m_flagname = this.m_cmdname;
             this.m_cmdname = "";
         }
