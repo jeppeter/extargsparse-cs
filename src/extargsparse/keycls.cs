@@ -288,6 +288,16 @@ public class KeyCls
         }
     }
 
+    public string Flagname
+    {
+        get {
+            return this.m_flagname;
+        }
+        set {
+            this.__throw_exception(String.Format("Flagname can not set"));
+        }
+    }
+
     public int NeedArg
     {
         get {
@@ -783,6 +793,7 @@ public class KeyCls
         if (this.m_isflag && this.m_flagname == "$" && this.m_type != "dict") {
             if (this.m_type == "string") {
                 string strval = (System.String)(this.m_value as JValue);
+                Console.Error.WriteLine("strval [{0}]", strval);
                 if (! "+*?".Contains(strval)) {
                     this.__throw_exception(String.Format("{0} not valid for $", strval));
                 }
