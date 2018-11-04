@@ -497,9 +497,12 @@ public class KeyCls
         TypeClass typcls;
         string typestr;
         int ival;
+        Console.Error.Write("isflag [{0}] iscmd [{1}]", this.m_isflag, this.m_iscmd);
+
         if (this.m_isflag) {
-            Debug.Assert(! this.m_iscmd);
-            if (this.m_function != "") {
+            Debug.Assert(!this.m_iscmd);
+            Console.Error.WriteLine("function [{0}][{1}]",this.m_function, this.m_function.Length);
+            if (this.m_function.Length != 0) {
                 this.__throw_exception(String.Format("({0}) can not accept function", this.m_origkey));
             }
             if (this.m_type == "dict" && this.m_flagname != "") {
@@ -742,10 +745,12 @@ public class KeyCls
         if (flagmode) {
             this.m_isflag = true;
             this.m_iscmd = false;
+            Console.Error.WriteLine("isflag true");
         }
         if (cmdmode) {
             this.m_isflag = false;
             this.m_iscmd = true;
+            Console.Error.WriteLine("iscmd true");
         }
 
         if (!this.m_isflag && !this.m_iscmd) {
@@ -826,13 +831,14 @@ public class KeyCls
 
         ms = KeyCls.m_funcexpr.Matches(this.m_origkey);        
         if (ms.Count == 1 && ms[0].Groups.Count == 2) {
+            Console.Error.WriteLine("isflag [{0}]", this.m_isflag);
             if (this.m_isflag) {
                 this.m_varname = ms[0].Groups[1].Value;
             } else {
                 this.m_function = ms[0].Groups[1].Value;
             }
         }
-
+        Console.Error.WriteLine("function [{0}]", this.m_function);
         this.__validate();
 
         return;
