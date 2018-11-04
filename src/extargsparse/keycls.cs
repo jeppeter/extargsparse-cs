@@ -644,13 +644,13 @@ public class KeyCls
 
         if (isflag || ishelp || isjsonfile) {
             ms = KeyCls.m_flagexpr.Matches(this.m_origkey);
-            if (ms.Count > 1) {
-                flags = ms[1].Value;
+            if (ms.Count == 1 && ms[0].Groups.Count == 2) {
+                flags = ms[0].Groups[1].Value;
             }
             if (flags == "") {
                 ms = KeyCls.m_mustflagexpr.Matches(this.m_origkey);
-                if (ms.Count > 1) {
-                    flags = ms[1].Value;
+                if (ms.Count == 1 && ms[0].Groups.Count == 2) {
+                    flags = ms[0].Groups[1].Value;
                 }
             }
 
@@ -677,8 +677,8 @@ public class KeyCls
         } else {
             ms = KeyCls.m_mustflagexpr.Matches(this.m_origkey);
             Console.Error.WriteLine("ms [{0}] origkey [{1}]", ms.Count, this.m_origkey);
-            if (ms.Count > 1) {
-                flags = ms[1].Value;
+            if (ms.Count == 1 && ms[0].Groups.Count == 2) {
+                flags = ms[0].Groups[1].Value;
                 if (flags.Contains("|")) {
                     sarr = spexpr.Split(flags);
                     if (sarr.Length > 2 || sarr[1].Length > 1 || sarr[0].Length <= 1) {
@@ -701,11 +701,10 @@ public class KeyCls
                 flagmode = true;
             }
             ms = KeyCls.m_cmdexpr.Matches(this.m_origkey);
-            if (ms.Count > 1) {
+            if (ms.Count == 1 && ms[0].Groups.Count == 2) {
                 Debug.Assert(! flagmode);
-                if (ms[0].Value.Contains("|")) {
-                    flags = ms[1].Value;
-                    if (flags.Contains("|")) {
+                flags = ms[0].Groups[1].Value;
+                if (flags.Contains("|")) {
                         sarr = spexpr.Split(flags);
                         if (sarr.Length > 2 || sarr[0].Length <= 1 || sarr[1].Length != 1) {
                             this.__throw_exception(String.Format("({0}) ({1})flag only accept (longop|l) format", this.m_origkey, flags));
@@ -713,30 +712,27 @@ public class KeyCls
                         Console.Error.WriteLine("m_flagname [{0}]", sarr[0]);
                         this.m_flagname = sarr[0];
                         this.m_shortflag = sarr[1];
-                    } else {
-                        Debug.Assert(false);
-                    }
                     flagmode = true;
                 } else {
-                    this.m_cmdname = ms[0].Value;
+                    this.m_cmdname = flags;
                     cmdmode = true;
                 }
             }
         }
         ms = KeyCls.m_helpexpr.Matches(this.m_origkey);
-        if (ms.Count > 1) {
-            this.m_helpinfo = ms[1].Value;
+        if (ms.Count  == 1 && ms[0].Groups.Count == 2) {
+            this.m_helpinfo = ms[0].Groups[1].Value;
         }
         newprefix = "";
         if (prefix.Length > 0) {
             newprefix = prefix;
         }
         ms = KeyCls.m_prefixexpr.Matches(this.m_origkey);
-        if (ms.Count > 1) {
+        if (ms.Count == 1 && ms[0].Groups.Count == 2) {
             if (newprefix.Length > 0) {
                 newprefix += "_";
             }
-            newprefix += ms[1].Value;
+            newprefix += ms[0].Groups[1].Value;
             this.m_prefix = newprefix;
         } else {
             if (newprefix.Length > 0) {
@@ -824,16 +820,16 @@ public class KeyCls
         }
 
         ms = KeyCls.m_attrexpr.Matches(this.m_origkey);
-        if (ms.Count > 1) {
-            this.m_attr = new KeyAttr(ms[1].Value);
+        if (ms.Count == 1 && ms[0].Groups.Count == 2) {
+            this.m_attr = new KeyAttr(ms[0].Groups[1].Value);
         }
 
-        ms = KeyCls.m_funcexpr.Matches(this.m_origkey);
-        if (ms.Count > 1) {
+        ms = KeyCls.m_funcexpr.Matches(this.m_origkey);        
+        if (ms.Count == 1 && ms[0].Groups.Count == 2) {
             if (this.m_isflag) {
-                this.m_varname = ms[1].Value;
+                this.m_varname = ms[0].Groups[1].Value;
             } else {
-                this.m_function = ms[1].Value;
+                this.m_function = ms[0].Groups[1].Value;
             }
         }
 
