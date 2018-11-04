@@ -5,7 +5,7 @@ using Newtonsoft.Json.Linq;
 
 namespace extargsparse_Tests
 {
-    public class extargsparse_Tests
+    public class keycls_Tests
     {
         [SetUp]
         public void setUp()
@@ -34,6 +34,11 @@ namespace extargsparse_Tests
             Assert.AreEqual(flags.type,"string");
             Assert.AreEqual(flags.shortflag,"f");
             Assert.AreEqual(flags.prefix,"type");
+            Assert.AreEqual(flags.cmdname, null);
+            Assert.AreEqual(flags.helpinfo,null);
+            Assert.AreEqual(flags.isflag, true);
+            Assert.AreEqual(flags.iscmd, false);
+            Assert.AreEqual(flags.varname, "type_flag");
             return;
         }
     }

@@ -240,7 +240,7 @@ public class KeyCls
             }
             return c;
         } set {
-            this.__throw_exception(String.Format("Longopt can not set"));
+            this.__throw_exception(String.Format("longopt can not set"));
         }
     }
 
@@ -259,7 +259,7 @@ public class KeyCls
             }
             return c;
         } set {
-            this.__throw_exception(String.Format("Shortopt can not set"));
+            this.__throw_exception(String.Format("shortopt can not set"));
         }
     }
 
@@ -294,7 +294,7 @@ public class KeyCls
             return this.m_flagname;
         }
         set {
-            this.__throw_exception(String.Format("Flagname can not set"));
+            this.__throw_exception(String.Format("flagname can not set"));
         }
     }
 
@@ -329,7 +329,7 @@ public class KeyCls
             return null;            
         }
         set {
-            this.__throw_exception(String.Format("Value can not set"));
+            this.__throw_exception(String.Format("value can not set"));
         }
     }
 
@@ -339,7 +339,7 @@ public class KeyCls
             return this.m_type;
         }
         set {
-            this.__throw_exception(String.Format("Type can not set"));
+            this.__throw_exception(String.Format("type can not set"));
         }
     }
 
@@ -349,7 +349,7 @@ public class KeyCls
             return this.m_shortflag;
         }
         set {
-            this.__throw_exception(String.Format("Shortflag can not set"));
+            this.__throw_exception(String.Format("shortflag can not set"));
         }
     }
 
@@ -359,7 +359,7 @@ public class KeyCls
             return this.m_prefix;
         }
         set {
-            this.__throw_exception(String.Format("Prefix can not set"));
+            this.__throw_exception(String.Format("prefix can not set"));
         }
     }
 
@@ -380,7 +380,67 @@ public class KeyCls
             }
             return 0;
         } set {
-            this.__throw_exception(String.Format("NeedArg can not set"));
+            this.__throw_exception(String.Format("needarg can not set"));
+        }
+    }
+
+    public string cmdname
+    {
+        get {
+            return this.m_cmdname;
+        }
+        set {
+            this.__throw_exception(String.Format("cmdname can not set"));
+        }
+    }
+
+    public string helpinfo
+    {
+        get {
+            return this.m_helpinfo;
+        }
+        set {
+            this.__throw_exception(String.Format("helpinfo can not set"));
+        }
+    }
+
+    public string function
+    {
+        get {
+            return this.m_function;
+        }
+        set {
+            this.__throw_exception(String.Format("function can not set"));
+        }
+    }
+
+    public bool isflag
+    {
+        get {
+            return this.m_isflag;
+        }
+        set {
+            this.__throw_exception(String.Format("isflag can not set"));
+        }
+    }
+
+    public bool iscmd
+    {
+        get {
+            return this.m_iscmd;
+        }
+        set {
+            this.__throw_exception(String.Format("iscmd can not set"));
+        }
+    }
+
+    public string varname
+    {
+        get {
+            return this.m_varname;
+        }
+        set {
+            this.__throw_exception(String.Format("varname can not set"));
         }
     }
 
@@ -659,7 +719,7 @@ public class KeyCls
             this.m_type = "command";
         }
 
-        if (this.m_isflag && this.m_varname == "" && this.m_flagname != "") {
+        if (this.m_isflag && this.m_varname == null && this.m_flagname != "") {
             if (this.m_flagname != "$") {
                 this.m_varname = this.optdest;
             } else {
