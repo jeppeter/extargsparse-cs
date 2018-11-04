@@ -298,6 +298,61 @@ public class KeyCls
         }
     }
 
+    public object Value
+    {
+        get {
+            string typ;
+            JValue val;
+            if (this.m_value != null) {
+                typ = this.m_value.GetType().FullName;
+                if (typ == "Newtonsoft.Json.Linq.JValue") {
+                    val = (JValue) this.m_value;
+                    switch(val.Type) {
+                    case JTokenType.Integer:
+                        return (int) val;
+                    case JTokenType.Float:
+                        return (float) val;
+                    case JTokenType.String:
+                        return (string) val;
+                    case JTokenType.Null:
+                        return null;
+                    case JTokenType.Boolean:
+                        return (bool) val;
+                    }
+                    this.__throw_exception(String.Format("can not determin [{0}] value [{1}]", this.m_origkey, this.m_value));
+                } else if (typ == "Newtonsoft.Json.Linq.JArray" || typ == "Newtonsoft.Json.Linq.JObject") {
+                    return this.m_value;
+                } else  {
+                    this.__throw_exception(String.Format("[{0}] value type [{1}] [{2}]", this.m_origkey, typ,this.m_value));
+                }
+            } 
+            return null;            
+        }
+        set {
+            this.__throw_exception(String.Format("Value can not set"));
+        }
+    }
+
+    public string Type
+    {
+        get {
+            return this.m_type;
+        }
+        set {
+            this.__throw_exception(String.Format("Type can not set"));
+        }
+    }
+
+    public string Shortflag
+    {
+        get {
+            return this.m_shortflag;
+        }
+        set {
+            this.__throw_exception(String.Format("Shortflag can not set"));
+        }
+    }
+
     public int NeedArg
     {
         get {
@@ -497,12 +552,9 @@ public class KeyCls
         TypeClass typcls;
         string typestr;
         int ival;
-        Console.Error.Write("isflag [{0}] iscmd [{1}]", this.m_isflag, this.m_iscmd);
-
         if (this.m_isflag) {
             Debug.Assert(!this.m_iscmd);
-            Console.Error.WriteLine("function [{0}][{1}]",this.m_function, this.m_function.Length);
-            if (this.m_function.Length != 0) {
+            if (this.m_function != null) {
                 this.__throw_exception(String.Format("({0}) can not accept function", this.m_origkey));
             }
             if (this.m_type == "dict" && this.m_flagname != "") {
@@ -658,7 +710,6 @@ public class KeyCls
             }
 
             if (flags == "" && this.m_origkey[0] == '$') {
-                Console.Error.WriteLine("m_flagname $");
                 this.m_flagname = "$";
                 flagmode = true;
             }
@@ -668,18 +719,15 @@ public class KeyCls
                     if (sarr.Length > 2 || sarr[1].Length != 1 || sarr[0].Length <= 1) {
                         this.__throw_exception(String.Format("({0}) ({1})flag only accept (longop|l) format", this.m_origkey, flags));
                     }
-                    Console.Error.WriteLine("m_flagname [{0}]", sarr[0]);
                     this.m_flagname = sarr[0];
                     this.m_shortflag = sarr[1];
                 } else {
-                    Console.Error.WriteLine("m_flagname [{0}]", flags);
                     this.m_flagname = flags;
                 }
                 flagmode = true;
             }
         } else {
             ms = KeyCls.m_mustflagexpr.Matches(this.m_origkey);
-            Console.Error.WriteLine("ms [{0}] origkey [{1}]", ms.Count, this.m_origkey);
             if (ms.Count == 1 && ms[0].Groups.Count == 2) {
                 flags = ms[0].Groups[1].Value;
                 if (flags.Contains("|")) {
@@ -687,19 +735,16 @@ public class KeyCls
                     if (sarr.Length > 2 || sarr[1].Length > 1 || sarr[0].Length <= 1) {
                         this.__throw_exception(String.Format("({0}) ({1})flag only accept (longop|l) format", this.m_origkey, flags));
                     }
-                    Console.Error.WriteLine("m_flagname [{0}]", sarr[0]);
                     this.m_flagname = sarr[0];
                     this.m_shortflag = sarr[1];
                 } else {
                     if (flags.Length <= 1) {
                         this.__throw_exception(String.Format("({0}) flag must have long opt", this.m_origkey));
                     }
-                    Console.Error.WriteLine("m_flagname [{0}]", flags);
                     this.m_flagname = flags;
                 }
                 flagmode = true;
             } else if (this.m_origkey[0] == '$') {
-                Console.Error.WriteLine("m_flagname set [$]");
                 this.m_flagname = "$";
                 flagmode = true;
             }
@@ -712,7 +757,6 @@ public class KeyCls
                         if (sarr.Length > 2 || sarr[0].Length <= 1 || sarr[1].Length != 1) {
                             this.__throw_exception(String.Format("({0}) ({1})flag only accept (longop|l) format", this.m_origkey, flags));
                         }
-                        Console.Error.WriteLine("m_flagname [{0}]", sarr[0]);
                         this.m_flagname = sarr[0];
                         this.m_shortflag = sarr[1];
                     flagmode = true;
@@ -745,12 +789,10 @@ public class KeyCls
         if (flagmode) {
             this.m_isflag = true;
             this.m_iscmd = false;
-            Console.Error.WriteLine("isflag true");
         }
         if (cmdmode) {
             this.m_isflag = false;
             this.m_iscmd = true;
-            Console.Error.WriteLine("iscmd true");
         }
 
         if (!this.m_isflag && !this.m_iscmd) {
@@ -779,7 +821,6 @@ public class KeyCls
             cmdmode = false;
             this.m_isflag = true;
             this.m_iscmd = false;
-            Console.Error.WriteLine("m_flagname [{0}]", this.m_cmdname);
             this.m_flagname = this.m_cmdname;
             this.m_cmdname = "";
         }
@@ -803,7 +844,6 @@ public class KeyCls
         if (this.m_isflag && this.m_flagname == "$" && this.m_type != "dict") {
             if (this.m_type == "string") {
                 string strval = (System.String)(this.m_value as JValue);
-                Console.Error.WriteLine("strval [{0}]", strval);
                 if (! "+*?".Contains(strval)) {
                     this.__throw_exception(String.Format("{0} not valid for $", strval));
                 }
@@ -831,14 +871,12 @@ public class KeyCls
 
         ms = KeyCls.m_funcexpr.Matches(this.m_origkey);        
         if (ms.Count == 1 && ms[0].Groups.Count == 2) {
-            Console.Error.WriteLine("isflag [{0}]", this.m_isflag);
             if (this.m_isflag) {
                 this.m_varname = ms[0].Groups[1].Value;
             } else {
                 this.m_function = ms[0].Groups[1].Value;
             }
         }
-        Console.Error.WriteLine("function [{0}]", this.m_function);
         this.__validate();
 
         return;

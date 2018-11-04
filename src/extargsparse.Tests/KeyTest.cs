@@ -27,6 +27,12 @@ namespace extargsparse_Tests
             jval = JToken.Parse("\"string\"");
             flags = new KeyCls("","$flag|f+type",jval,false);
             Assert.AreEqual(flags.Flagname,"flag");
+            Assert.AreEqual(flags.Longopt,"--type-flag");
+            Assert.AreEqual(flags.Shortopt,"-f");
+            Assert.AreEqual(flags.Optdest, "type_flag");
+            Assert.AreEqual(flags.Value,"string");
+            Assert.AreEqual(flags.Type,"string");
+            Assert.AreEqual(flags.Shortflag,"f");
             return;
         }
     }
