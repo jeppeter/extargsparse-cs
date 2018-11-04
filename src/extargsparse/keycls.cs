@@ -211,7 +211,7 @@ public class KeyCls
         throw new KeyException(fmt);
     }
 
-    public string Longopt
+    public string longopt
     {
         get {
             string c = "";
@@ -244,7 +244,7 @@ public class KeyCls
         }
     }
 
-    public string Shortopt
+    public string shortopt
     {
         get {
             string c = null;
@@ -263,14 +263,14 @@ public class KeyCls
         }
     }
 
-    public string Optdest
+    public string optdest
     {
         get {
             string c = "";
             if (!this.m_isflag ||
                     this.m_flagname == null ||
                     this.m_type == "args") {
-                this.__throw_exception(String.Format("can not set ({0}) Optdest", this.m_origkey));
+                this.__throw_exception(String.Format("can not set ({0}) optdest", this.m_origkey));
             }
             if (this.m_prefix.Length > 0) {
                 c += String.Format("{0}_", this.m_prefix);
@@ -284,11 +284,11 @@ public class KeyCls
         }
 
         set {
-            this.__throw_exception(String.Format("Optdest can not set"));
+            this.__throw_exception(String.Format("optdest can not set"));
         }
     }
 
-    public string Flagname
+    public string flagname
     {
         get {
             return this.m_flagname;
@@ -298,7 +298,7 @@ public class KeyCls
         }
     }
 
-    public object Value
+    public object value
     {
         get {
             string typ;
@@ -333,7 +333,7 @@ public class KeyCls
         }
     }
 
-    public string Type
+    public string type
     {
         get {
             return this.m_type;
@@ -343,7 +343,7 @@ public class KeyCls
         }
     }
 
-    public string Shortflag
+    public string shortflag
     {
         get {
             return this.m_shortflag;
@@ -353,7 +353,17 @@ public class KeyCls
         }
     }
 
-    public int NeedArg
+    public string prefix
+    {
+        get {
+            return this.m_prefix;
+        }
+        set {
+            this.__throw_exception(String.Format("Prefix can not set"));
+        }
+    }
+
+    public int needarg
     {
         get {
             if (!this.m_isflag) {
@@ -379,13 +389,13 @@ public class KeyCls
         if (Array.IndexOf(KeyCls.m_flagwords, name) >= 0) {
             switch (name) {
             case "longopt":
-                return this.Longopt;
+                return this.longopt;
             case "shortopt":
-                return this.Shortopt;
+                return this.shortopt;
             case "optdest":
-                return this.Optdest;
+                return this.optdest;
             case "needarg":
-                return this.NeedArg;
+                return this.needarg;
             }
         } else if ( Array.IndexOf(KeyCls.m_flagwords, name) >= 0 ||
                     Array.IndexOf(KeyCls.m_cmdwords, name) >= 0 ||
@@ -651,7 +661,7 @@ public class KeyCls
 
         if (this.m_isflag && this.m_varname == "" && this.m_flagname != "") {
             if (this.m_flagname != "$") {
-                this.m_varname = this.Optdest;
+                this.m_varname = this.optdest;
             } else {
                 if (this.m_prefix.Length > 0) {
                     this.m_varname = "subnargs";
