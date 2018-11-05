@@ -142,7 +142,7 @@ public class KeyCls
     }
 
     private JToken m_value = null;
-    private string m_prefix = null;
+    private string m_prefix = "";
     private string m_flagname = null;
     private string m_helpinfo = null;
     private string m_shortflag = null;
@@ -166,7 +166,7 @@ public class KeyCls
         bool bv;
         object ov;
         this.m_value = null;
-        this.m_prefix = null;
+        this.m_prefix = "";
         this.m_flagname = null;
         this.m_helpinfo = null;
         this.m_shortflag = null;
@@ -228,7 +228,7 @@ public class KeyCls
                 }
             }
 
-            if (this.m_prefix.Length > 0 &&
+            if (this.m_prefix != "" &&
                     this.m_type != "help") {
                 c += String.Format("{0}_", this.m_prefix);
             }
@@ -272,7 +272,7 @@ public class KeyCls
                     this.m_type == "args") {
                 this.__throw_exception(String.Format("can not set ({0}) optdest", this.m_origkey));
             }
-            if (this.m_prefix.Length > 0) {
+            if (this.m_prefix != "") {
                 c += String.Format("{0}_", this.m_prefix);
             }
             c += this.m_flagname;
@@ -723,7 +723,7 @@ public class KeyCls
             if (this.m_flagname != "$") {
                 this.m_varname = this.optdest;
             } else {
-                if (this.m_prefix.Length > 0) {
+                if (this.m_prefix != "") {
                     this.m_varname = "subnargs";
                 } else {
                     this.m_varname = "args";
