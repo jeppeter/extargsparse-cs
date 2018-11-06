@@ -88,5 +88,29 @@ public class keycls_Tests
         Assert.AreEqual(flags.varname,"flag");
         return;
     }
+
+    [Test]
+    public void test_A004()
+    {
+        JToken jval;
+        KeyCls flags;
+        jval = JToken.Parse("\"\"");
+        flags = new KeyCls("","flag<flag.main>##help for flag##", jval, true);
+        Assert.AreEqual(flags.cmdname,null);
+        Assert.AreEqual(flags.function,null);
+        Assert.AreEqual(flags.type,"string");
+        Assert.AreEqual(flags.prefix,"");
+        Assert.AreEqual(flags.flagname,"flag");
+        Assert.AreEqual(flags.helpinfo,"help for flag");
+        Assert.AreEqual(flags.shortflag,null);
+        Assert.AreEqual(flags.value,"");
+        Assert.AreEqual(flags.isflag,true);
+        Assert.AreEqual(flags.iscmd,false);
+        Assert.AreEqual(flags.longopt,"--flag");
+        Assert.AreEqual(flags.shortopt,null);
+        Assert.AreEqual(flags.optdest,"flag");
+        Assert.AreEqual(flags.varname,"flag.main");
+        return;
+    }
 }
 }

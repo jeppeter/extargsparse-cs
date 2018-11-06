@@ -664,7 +664,7 @@ public class KeyCls
                     this.__throw_exception(String.Format("({0}) can not accept ({1})short flag in flagname", this.m_origkey, this.m_flagname));
                 }
             }
-            if (this.m_shortflag != "") {
+            if (this.m_shortflag != null) {
                 if (this.m_shortflag.Length > 1) {
                     this.__throw_exception(String.Format("({0}) can not accept ({0}) for shortflag", this.m_origkey, this.m_shortflag));
                 }
