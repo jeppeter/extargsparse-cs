@@ -18,6 +18,47 @@ public class keycls_Tests
         return;
     }
 
+    private void __opt_fail_check(KeyCls keycls)
+    {
+        bool ok =false;
+        string val;
+        try {
+            val = keycls.longopt;
+        }
+        catch(KeyException ec) {
+            KeyException nec;
+            nec = ec;
+            ec = nec;
+            ok = true;
+        }
+        Assert.AreEqual(ok, true);
+
+        ok = false;
+        try {
+            val = keycls.optdest;
+        }
+        catch(KeyException ec) {
+            KeyException nec;
+            nec = ec;
+            ec = nec;
+            ok = true;
+        }
+        Assert.AreEqual(ok, true);
+
+        ok = false;
+        try {
+            val = keycls.shortopt;
+        }
+        catch(KeyException ec) {
+            KeyException nec;
+            nec = ec;
+            ec = nec;
+            ok = true;
+        }
+        Assert.AreEqual(ok, true);
+        return;
+    }
+
 
     [Test]
     public void test_A001()
@@ -91,6 +132,29 @@ public class keycls_Tests
 
     [Test]
     public void test_A004()
+    {
+        JToken jval;
+        KeyCls flags;
+        jval = JToken.Parse("{}");
+        flags = new KeyCls("newtype","flag<flag.main>##help for flag##", jval, false);
+        Assert.AreEqual(flags.cmdname,"flag");
+        Assert.AreEqual(flags.function,"flag.main");
+        Assert.AreEqual(flags.type,"command");
+        Assert.AreEqual(flags.prefix,"newtype");
+        Assert.AreEqual(flags.helpinfo,"help for flag");
+        Assert.AreEqual(flags.flagname,null);
+        Assert.AreEqual(flags.shortflag,null);
+        Assert.AreEqual(flags.value,jval);
+        Assert.AreEqual(flags.isflag,false);
+        Assert.AreEqual(flags.iscmd,true);
+        this.__opt_fail_check(flags);
+        Assert.AreEqual(flags.varname,null);
+        return;
+    }
+
+
+    [Test]
+    public void test_A005()
     {
         JToken jval;
         KeyCls flags;

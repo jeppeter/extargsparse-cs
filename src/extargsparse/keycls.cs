@@ -704,7 +704,7 @@ public class KeyCls
             if (this.m_cmdname == "") {
                 this.__throw_exception(String.Format("({0}) not set cmdname",this.m_origkey));
             }
-            if (this.m_shortflag != "") {
+            if (this.m_shortflag != null && this.m_shortflag.Length > 0) {
                 this.__throw_exception(String.Format("({0}) has shortflag ({0})", this.m_origkey, this.m_shortflag));
             }
             if (this.m_nargs != null) {
