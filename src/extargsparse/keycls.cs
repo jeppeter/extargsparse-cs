@@ -627,7 +627,7 @@ public class KeyCls
             if (this.m_function != null) {
                 this.__throw_exception(String.Format("({0}) can not accept function", this.m_origkey));
             }
-            if (this.m_type == "dict" && this.m_flagname != "") {
+            if (this.m_type == "dict" && this.m_flagname != null) {
                 this.__throw_exception(String.Format("({0}) flag can not accept dict", this.m_origkey));
             }
             typcls = new TypeClass(this.m_value);
@@ -637,7 +637,7 @@ public class KeyCls
                     this.m_value, this.m_type));
             }
 
-            if (this.m_flagname == "") {
+            if (this.m_flagname == null) {
                 if (this.m_prefix == "") {
                     this.__throw_exception(String.Format("({0}) should at least for prefix", this.m_origkey));
                 }
@@ -647,11 +647,11 @@ public class KeyCls
                     this.__throw_exception(String.Format("({0}) should used dict to make prefix", this.m_origkey));
                 }
 
-                if (this.m_helpinfo != "") {
+                if (this.m_helpinfo != null) {
                     this.__throw_exception(String.Format("({0}) should not have help info", this.m_origkey));
                 }
 
-                if (this.m_shortflag != "") {
+                if (this.m_shortflag != null) {
                     this.__throw_exception(String.Format("({0}) should not set shortflag", this.m_origkey));
                 }
             } else if (this.m_flagname == "$") {
@@ -719,7 +719,7 @@ public class KeyCls
             this.m_type = "command";
         }
 
-        if (this.m_isflag && this.m_varname == null && this.m_flagname != "") {
+        if (this.m_isflag && this.m_varname == null && this.m_flagname != null) {
             if (this.m_flagname != "$") {
                 this.m_varname = this.optdest;
             } else {
