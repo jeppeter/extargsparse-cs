@@ -348,5 +348,25 @@ public class keycls_Tests
         Assert.AreEqual(flags.optdest,"cc_flag");
         return;
     }
+
+    [Test]
+    public void test_A014()
+    {
+        JToken jval;
+        KeyCls flags;
+        int ok = 0;
+        try{
+            jval = JToken.Parse("\"\"");
+            flags = new KeyCls("","c$",jval,false);
+        }
+        catch(KeyException ec){
+            KeyException nec;
+            nec = ec;
+            ec = nec;
+            ok = 1;
+        }
+        Assert.AreEqual(ok ,1);
+        return;
+    }
 }
 }
