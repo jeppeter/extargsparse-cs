@@ -448,6 +448,16 @@ public class KeyCls
         }
     }
 
+    public object nargs
+    {
+        get {
+            return this.m_nargs;
+        }
+        set {
+            this.__throw_exception(String.Format("nargs can not set"));
+        }
+    }
+
     private Object __get_value(string name)
     {
         if (Array.IndexOf(KeyCls.m_flagwords, name) >= 0) {
@@ -571,7 +581,7 @@ public class KeyCls
             if (Array.IndexOf(KeyCls.m_flagwords, k) >= 0) {
                 v = nobj[k] ;
                 gv = this.__get_value(k);
-                if (gv.Equals("") && !this.__object_equal(v, gv)) {
+                if (( v == null && gv != null) || ( v != null && gv == null) ||  (gv.Equals("") && !this.__object_equal(v, gv))) {
                     this.__throw_exception(String.Format("set ({0}) for not equal value ({1}) ({2})", k , v, gv));
                 }
                 typcls = new TypeClass(v);
