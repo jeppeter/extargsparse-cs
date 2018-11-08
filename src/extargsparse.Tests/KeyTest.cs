@@ -220,5 +220,25 @@ public class keycls_Tests
         this.__opt_fail_check(flags);
         return;
     }
+
+    [Test]
+    public void test_A008()
+    {
+        JToken jval;
+        KeyCls flags;
+        int ok = 0;
+        try{
+            jval = JToken.Parse("null");
+            flags = new KeyCls("","+flag## help ##",jval,false);
+        }
+        catch(KeyException ec){
+            KeyException nec;
+            nec = ec;
+            ec = nec;
+            ok = 1;
+        }
+        Assert.AreEqual(ok ,1);
+        return;
+    }
 }
 }
