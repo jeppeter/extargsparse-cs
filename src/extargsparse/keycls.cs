@@ -101,32 +101,36 @@ public class KeyCls
         {
             var valtype = "";
             JValue val;
-            valtype = tok.GetType().FullName;
-            if (valtype == "Newtonsoft.Json.Linq.JValue") {
-                val = (JValue) tok;
-                switch (val.Type) {
-                case JTokenType.Integer:
-                    this.typename = "int";
-                    break;
-                case JTokenType.Float:
-                    this.typename = "float";
-                    break;
-                case JTokenType.String:
-                case JTokenType.Null:
-                    this.typename = "string";
-                    break;
-                case JTokenType.Boolean:
-                    this.typename = "bool";
-                    break;
-                default:
-                    throw new KeyException(String.Format("unknown jvalue type [{0}]", val.Type));
-                }
-            } else if (valtype == "Newtonsoft.Json.Linq.JArray") {
-                this.typename = "list";
-            } else if (valtype == "Newtonsoft.Json.Linq.JObject") {
-                this.typename = "dict";
+            if (tok == null) {
+                this.typename = "string";
             } else {
-                throw new KeyException(String.Format("unknown JToken type [{0}]", valtype));
+                valtype = tok.GetType().FullName;
+                if (valtype == "Newtonsoft.Json.Linq.JValue") {
+                    val = (JValue) tok;
+                    switch (val.Type) {
+                    case JTokenType.Integer:
+                        this.typename = "int";
+                        break;
+                    case JTokenType.Float:
+                        this.typename = "float";
+                        break;
+                    case JTokenType.String:
+                    case JTokenType.Null:
+                        this.typename = "string";
+                        break;
+                    case JTokenType.Boolean:
+                        this.typename = "bool";
+                        break;
+                    default:
+                        throw new KeyException(String.Format("unknown jvalue type [{0}]", val.Type));
+                    }
+                } else if (valtype == "Newtonsoft.Json.Linq.JArray") {
+                    this.typename = "list";
+                } else if (valtype == "Newtonsoft.Json.Linq.JObject") {
+                    this.typename = "dict";
+                } else {
+                    throw new KeyException(String.Format("unknown JToken type [{0}]", valtype));
+                }
             }
         }
 
@@ -555,7 +559,7 @@ public class KeyCls
         this.m_origkey = key;
         Debug.Assert(value.GetType().FullName == "Newtonsoft.Json.Linq.JObject");
         jobj = value.Value<JObject>();
-        if (jobj["value"] != null) {
+        if (jobj["value"] == null) {
             this.m_value = null;
             this.m_type = "string";
         }
@@ -930,7 +934,7 @@ public class KeyCls
             }
         }
 
-        if (this.m_isflag && this.m_type == "dict" && this.m_flagname != "") {
+        if (this.m_isflag && this.m_type == "dict" && this.m_flagname != null) {
             this.__set_flag(prefix, key, value);
         }
 

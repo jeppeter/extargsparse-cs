@@ -280,5 +280,50 @@ public class keycls_Tests
         Assert.AreEqual(ok ,1);
         return;
     }
+
+    [Test]
+    public void test_A011()
+    {
+        JToken jval;
+        KeyCls flags;
+        int ok = 0;
+        try{
+            jval = JToken.Parse("null");
+            flags = new KeyCls("","f|f2",jval,false);
+        }
+        catch(KeyException ec){
+            KeyException nec;
+            nec = ec;
+            ec = nec;
+            ok = 1;
+        }
+        Assert.AreEqual(ok ,1);
+        return;
+    }
+
+    [Test]
+    public void test_A012()
+    {
+        JToken jval;
+        KeyCls flags;
+        jval = JToken.Parse("{}");
+        flags = new KeyCls("","$flag|f<flag.main>", jval,false);
+        Assert.AreEqual(flags.prefix,"");
+        Assert.AreEqual(flags.value,null);
+        Assert.AreEqual(flags.cmdname, null);
+        Assert.AreEqual(flags.shortflag ,"f");
+        Assert.AreEqual(flags.flagname,"flag");
+        Assert.AreEqual(flags.function, null);
+        Assert.AreEqual(flags.helpinfo, null);
+        Assert.AreEqual(flags.isflag,true);
+        Assert.AreEqual(flags.iscmd,false);
+        Assert.AreEqual(flags.type,"string");
+        Assert.AreEqual(flags.varname,"flag.main");
+        Assert.AreEqual(flags.longopt,"--flag");
+        Assert.AreEqual(flags.shortopt,"-f");
+        Assert.AreEqual(flags.optdest,"flag");
+        return;
+
+    }
 }
 }
