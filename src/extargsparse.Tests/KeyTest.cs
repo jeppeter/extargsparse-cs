@@ -323,7 +323,30 @@ public class keycls_Tests
         Assert.AreEqual(flags.shortopt,"-f");
         Assert.AreEqual(flags.optdest,"flag");
         return;
+    }
 
+    [Test]
+    public void test_A013()
+    {
+        JToken jval;
+        KeyCls flags;
+        jval = JToken.Parse("null");
+        flags = new KeyCls("","$flag|f+cc<flag.main>",jval,false);
+        Assert.AreEqual(flags.prefix,"cc");
+        Assert.AreEqual(flags.value,null);
+        Assert.AreEqual(flags.cmdname, null);
+        Assert.AreEqual(flags.shortflag ,"f");
+        Assert.AreEqual(flags.flagname,"flag");
+        Assert.AreEqual(flags.function,null);
+        Assert.AreEqual(flags.helpinfo,null);
+        Assert.AreEqual(flags.isflag,true);
+        Assert.AreEqual(flags.iscmd,false);
+        Assert.AreEqual(flags.type,"string");
+        Assert.AreEqual(flags.varname,"flag.main");
+        Assert.AreEqual(flags.longopt,"--cc-flag");
+        Assert.AreEqual(flags.shortopt,"-f");
+        Assert.AreEqual(flags.optdest,"cc_flag");
+        return;
     }
 }
 }
