@@ -947,7 +947,10 @@ public class KeyCls
         }
 
         if (this.m_isflag && this.m_flagname == "$" && this.m_type != "dict") {
-            if (this.m_type == "string") {
+            if (this.m_type == "string" ) {
+                if (this.m_value == null) {
+                    this.__throw_exception(String.Format("can not set for value null"));
+                }
                 string strval = (System.String)(this.m_value as JValue);
                 if (! "+*?".Contains(strval)) {
                     this.__throw_exception(String.Format("{0} not valid for $", strval));

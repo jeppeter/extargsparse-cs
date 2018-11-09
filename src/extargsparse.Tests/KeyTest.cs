@@ -481,5 +481,23 @@ public class keycls_Tests
         Assert.AreEqual(flags.optdest, "good_flag");
         return;
     }
+
+    [Test]
+    public void test_A020()
+    {
+        KeyCls flags;
+        int ok = 0;
+        try{
+            flags = new KeyCls("","$",null,false);
+        }
+        catch(KeyException ec){
+            KeyException nec;
+            nec = ec;
+            ec = nec;
+            ok = 1;
+        }
+        Assert.AreEqual(ok ,1);
+        return;
+    }
 }
 }
