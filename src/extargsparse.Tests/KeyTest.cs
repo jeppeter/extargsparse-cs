@@ -2,6 +2,7 @@ using NUnit.Framework;
 using extargsparse;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System;
 
 namespace extargsparse_Tests
 {

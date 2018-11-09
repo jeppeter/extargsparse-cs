@@ -313,15 +313,15 @@ public class KeyCls
                     val = (JValue) this.m_value;
                     switch(val.Type) {
                     case JTokenType.Integer:
-                        return (int) val;
+                        return (int) val.Value;
                     case JTokenType.Float:
-                        return (float) val;
+                        return (float) val.Value;
                     case JTokenType.String:
-                        return (string) val;
+                        return (string) val.Value;
                     case JTokenType.Null:
                         return null;
                     case JTokenType.Boolean:
-                        return (bool) val;
+                        return (bool) val.Value;
                     }
                     this.__throw_exception(String.Format("can not determin [{0}] value [{1}]", this.m_origkey, this.m_value));
                 } else if (typ == "Newtonsoft.Json.Linq.JArray" || typ == "Newtonsoft.Json.Linq.JObject") {
@@ -451,7 +451,27 @@ public class KeyCls
     public object nargs
     {
         get {
-            return this.m_nargs;
+            string typ;
+            JValue val;
+            if (this.m_nargs == null) {
+                return 0;
+            }
+            typ = this.m_nargs.GetType().FullName;
+            if (typ == "Newtonsoft.Json.Linq.JValue") {
+                val = (JValue) this.m_nargs;
+                switch (val.Type) {
+                case JTokenType.Integer:
+                    return (System.Int32) val.Value;
+                case JTokenType.String:
+                    string sval = (System.String) val.Value;
+                    if (sval == "+" || sval == "*" || sval == "?") {
+                        return sval;
+                    }
+                    break;
+                }
+            }
+            return 0;
+            //this.__throw_exception(String.Format("not valid type [{0}] or value [{1}]", typ, this.m_nargs));
         }
         set {
             this.__throw_exception(String.Format("nargs can not set"));
@@ -493,6 +513,7 @@ public class KeyCls
             Type t  = typeof(KeyCls);
             FieldInfo info = t.GetField(kname, BindingFlags.NonPublic | BindingFlags.Instance);
             info.SetValue(this, v);
+            return;
         }
         this.__throw_exception(String.Format("{0} not support key", k));
     }
@@ -581,11 +602,11 @@ public class KeyCls
             if (Array.IndexOf(KeyCls.m_flagwords, k) >= 0) {
                 v = nobj[k] ;
                 gv = this.__get_value(k);
-                if (( v == null && gv != null) || ( v != null && gv == null) ||  (gv.Equals("") && !this.__object_equal(v, gv))) {
+                if ( gv != null && gv.Equals("") && !this.__object_equal(v, gv)) {
                     this.__throw_exception(String.Format("set ({0}) for not equal value ({1}) ({2})", k , v, gv));
                 }
                 typcls = new TypeClass(v);
-                if (!(typcls.get_type() != "string" && typcls.get_type() != "int")) {
+                if (!(typcls.get_type() == "string" || typcls.get_type() == "int")) {
                     this.__throw_exception(String.Format("({0})({1})({2}) can not take other than int or string ({3})", this.m_origkey, k, v, typcls.get_type()));
                 }
                 this.__set_value(k, v);
@@ -670,7 +691,7 @@ public class KeyCls
                 }
             } else if (this.m_flagname == "$") {
                 this.m_type = "args";
-                if (this.m_shortflag != "") {
+                if (this.m_shortflag != null) {
                     this.__throw_exception(String.Format("({0}) can not set shortflag for args",this.m_origkey));
                 }
             } else {
