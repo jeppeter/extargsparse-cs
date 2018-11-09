@@ -412,5 +412,29 @@ public class keycls_Tests
         this.__opt_fail_check(flags);
         return;
     }
+
+    [Test]
+    public void test_A017()
+    {
+        JToken jval;
+        KeyCls flags;
+        jval = JToken.Parse("3.3");
+        flags = new KeyCls("type","flag+app## flag help ##",jval,false);
+        Assert.AreEqual(flags.flagname ,"flag");
+        Assert.AreEqual(flags.prefix , "type_app");
+        Assert.AreEqual(flags.cmdname, null);
+        Assert.AreEqual(flags.shortflag , null);
+        Assert.AreEqual(flags.function , null);     
+        Assert.AreEqual(flags.type,"float");
+        Assert.AreEqual(flags.value,(double)3.3);
+        Assert.AreEqual(flags.longopt,"--type-app-flag");
+        Assert.AreEqual(flags.shortopt,null);
+        Assert.AreEqual(flags.optdest,"type_app_flag");
+        Assert.AreEqual(flags.helpinfo, " flag help ");
+        Assert.AreEqual(flags.isflag, true);
+        Assert.AreEqual(flags.iscmd, false);
+        Assert.AreEqual(flags.varname,"type_app_flag");
+        return;
+    }
 }
 }

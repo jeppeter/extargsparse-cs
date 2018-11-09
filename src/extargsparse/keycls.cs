@@ -315,7 +315,7 @@ public class KeyCls
                     case JTokenType.Integer:
                         return (int) val.Value;
                     case JTokenType.Float:
-                        return (float) val.Value;
+                        return (double) val.Value;
                     case JTokenType.String:
                         return (string) val.Value;
                     case JTokenType.Null:
@@ -736,7 +736,7 @@ public class KeyCls
                 this.m_nargs = "*";
             }
         } else {
-            if (this.m_cmdname == "") {
+            if (this.m_cmdname == null) {
                 this.__throw_exception(String.Format("({0}) not set cmdname",this.m_origkey));
             }
             if (this.m_shortflag != null && this.m_shortflag.Length > 0) {
@@ -927,7 +927,7 @@ public class KeyCls
             this.m_isflag = true;
             this.m_iscmd = false;
             this.m_flagname = this.m_cmdname;
-            this.m_cmdname = "";
+            this.m_cmdname = null;
         }
 
         if (this.m_isflag && this.m_type == "string" && this.m_flagname != "$") {
