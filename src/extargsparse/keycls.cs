@@ -784,7 +784,7 @@ public class KeyCls
             this.m_type = "command";
         }
 
-        if (this.m_isflag && this.m_varname == null && this.m_flagname != null) {
+        if (this.m_isflag && this.m_varname == null && this.m_flagname != null && this.m_type != "help") {
             if (this.m_flagname != "$") {
                 this.m_varname = this.optdest;
             } else {

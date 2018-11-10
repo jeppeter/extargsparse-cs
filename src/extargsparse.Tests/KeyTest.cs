@@ -832,5 +832,31 @@ public class keycls_Tests
         this.__opt_fail_check(flags);
         return;
     }
+
+    [Test]
+    public void test_A037()
+    {
+        KeyCls flags;
+        KeyAttr attr;
+        flags = new KeyCls("prefix","help|h!func=args_opt_func;wait=cc!",null,false,true);
+        Assert.AreEqual(flags.flagname , "help");
+        Assert.AreEqual(flags.shortflag , "h");
+        Assert.AreEqual(flags.prefix , "prefix");
+        Assert.AreEqual(flags.type,"help");
+        Assert.AreEqual(flags.value, null);
+        Assert.AreEqual(flags.helpinfo, null);
+        Assert.AreEqual(flags.nargs, 0);
+        Assert.AreEqual(flags.cmdname, null);
+        Assert.AreEqual(flags.function, null);
+        Assert.AreEqual(flags.varname, null);
+        attr = flags.attr;
+        Assert.AreNotEqual(attr, null);
+        Assert.AreEqual(attr.Attr("func"), "args_opt_func");
+        Assert.AreEqual(attr.Attr("wait"), "cc");
+        Assert.AreEqual(flags.longopt, "--help");
+        Assert.AreEqual(flags.shortopt, "-h");
+        Assert.AreEqual(flags.optdest, "prefix_help");
+        return;
+    }
 }
 }
