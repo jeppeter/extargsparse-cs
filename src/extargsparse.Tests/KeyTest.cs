@@ -858,5 +858,21 @@ public class keycls_Tests
         Assert.AreEqual(flags.optdest, "prefix_help");
         return;
     }
+
+    [Test]
+    public void test_A038()
+    {
+        KeyCls flag1, flag2,flag3,flag4;
+        flag1 = new KeyCls("prefix","help|h!func=args_opt_func;wait=cc!",null,false,true);
+        flag2 = new KeyCls("prefix","help|h!func=args_opt_func;wait=cc!",null,false);
+        Assert.AreEqual(flag1.Equals(flag2), false);
+        flag3 = new KeyCls("prefix","help|h!func=args_opt_func;wait=cc!",null,false,true);
+        flag4 = new KeyCls("prefix","help|h!func=args_opt_func;wait=cc!",null,false,true);
+        Assert.AreEqual(flag3.Equals(flag4), true);
+        flag3 = new KeyCls("prefix","help|h!func=args_opt_func!",null,false,true);
+        flag4 = new KeyCls("prefix","help|h!func=args_opt_func;wait=cc!",null,false,true);
+        Assert.AreEqual(flag3.Equals(flag4), false);
+        return;
+    }
 }
 }

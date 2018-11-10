@@ -56,6 +56,23 @@ namespace extargsparse
             }
             return String.Empty;
         }
+        public string[] Keys()
+        {
+            string[] retval;
+            int cnt =0;
+            int i;
+            foreach (KeyValuePair<string,string> k in this.m_obj) {
+                cnt ++;
+            }
+
+            retval = new string[cnt];
+            i = 0;
+            foreach (KeyValuePair<string,string> k in this.m_obj) {
+                retval[i] = k.Key;
+                i ++;
+            }
+            return retval;
+        }
 
         public override string ToString()
         {
@@ -562,18 +579,71 @@ public class KeyCls
         return bval;
     }
 
+    private Boolean __eq_attr(KeyCls other)
+    {
+        KeyAttr curattr ,otherattr;
+        string[] curkeys;
+        string[] otherkeys;
+        string ck;
+        int i;
+        curattr = this.attr;
+        otherattr = other.attr;
+        if (curattr == null && otherattr == null) {
+            return true;
+        } else if ((curattr != null && otherattr == null) ||
+            (curattr == null && otherattr != null)) {
+            return false;
+        }
+
+        curkeys = curattr.Keys();
+        otherkeys = otherattr.Keys();
+        if (curkeys.Length != otherkeys.Length) {
+            return false;
+        }
+
+        i = 0;
+        while(i<curkeys.Length) {
+            ck = curkeys[i];
+            if (Array.IndexOf(otherkeys,ck) < 0) {
+                return false;
+            }
+            if (curattr.Attr(ck) != otherattr.Attr(ck)) {
+                return false;
+            }
+            i++;
+        }
+        return true;
+    }
+
 
     public Boolean Equals(KeyCls other)
     {
         Boolean bval = true;
-        bval = this.__eq_array(other, KeyCls.m_flagwords);
+        bval = this.__eq_value(other,"type");
         if (!bval) {
             return bval;
         }
-
-        bval = this.__eq_array(other, KeyCls.m_flagspecial);
+        bval = this.__eq_value(other,"prefix");
         if (!bval) {
             return bval;
+        }
+        bval = this.__eq_value(other,"value");
+        if (!bval) {
+            return bval;
+        }
+        bval = this.__eq_attr(other);
+        if (!bval) {
+            return bval;
+        }
+        bval = this.__eq_value(other,"origkey");
+        if (!bval) {
+            return bval;
+        }
+        if (this.m_longprefix != other.m_longprefix) {
+            return false;
+        }
+        if (this.m_shortprefix != other.m_shortprefix) {
+            return false;
         }
         return true;
     }
@@ -961,18 +1031,19 @@ public class KeyCls
         }
 
         if (this.m_isflag && this.m_type == "string" && this.m_flagname != "$") {
-            Debug.Assert(value != null);
-            valtype = value.GetType().FullName;
-            if (valtype == "Newtonsoft.Json.Linq.JValue") {
-                jval = value as JValue;
-                if (jval.Type == JTokenType.String) {
-                    if ((System.String)jval.Value == "+") {
-                        jval = new JValue(0);
-                        this.m_value = jval;
-                        this.m_type = "count";
-                        this.m_nargs = 0;
+            if (value != null) {
+                valtype = value.GetType().FullName;
+                if (valtype == "Newtonsoft.Json.Linq.JValue") {
+                    jval = value as JValue;
+                    if (jval.Type == JTokenType.String) {
+                        if ((System.String)jval.Value == "+") {
+                            jval = new JValue(0);
+                            this.m_value = jval;
+                            this.m_type = "count";
+                            this.m_nargs = 0;
+                        }
                     }
-                }
+                }                
             }
         }
 
