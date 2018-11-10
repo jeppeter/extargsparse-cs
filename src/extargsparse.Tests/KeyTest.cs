@@ -994,5 +994,30 @@ public class keycls_Tests
         Assert.AreEqual(flags.shortprefix,"+");
         return;
     }
+
+    [Test]
+    public void test_A045()
+    {
+        KeyCls flags;
+        JToken jval;
+        jval = JToken.Parse("false");
+        flags = new KeyCls("","crl_CA_compromise",jval,true,false,false,"++","+",true);
+        Assert.AreEqual(flags.flagname,"crl_CA_compromise");
+        Assert.AreEqual(flags.shortflag, null);
+        Assert.AreEqual(flags.prefix,"");
+        Assert.AreEqual(flags.type,"bool");
+        Assert.AreEqual(flags.value, false);
+        Assert.AreEqual(flags.helpinfo, null);
+        Assert.AreEqual(flags.nargs,0);
+        Assert.AreEqual(flags.cmdname, null);
+        Assert.AreEqual(flags.function, null);
+        Assert.AreEqual(flags.optdest, "crl_CA_compromise");
+        Assert.AreEqual(flags.varname, "crl_CA_compromise");
+        Assert.AreEqual(flags.longopt, "++crl_CA_compromise");
+        Assert.AreEqual(flags.shortopt, null);
+        Assert.AreEqual(flags.longprefix,"++");
+        Assert.AreEqual(flags.shortprefix,"+");
+        return;
+    }
 }
 }
