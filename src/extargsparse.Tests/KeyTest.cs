@@ -585,5 +585,26 @@ public class keycls_Tests
         Assert.AreEqual(ok ,1);
         return;
     }
+
+    [Test]
+    public void test_A026()
+    {
+        JToken jval;
+        KeyCls flags;
+        jval = JToken.Parse("\"+\"");
+        flags = new KeyCls("dep","$",jval,false);
+        Assert.AreEqual(flags.flagname , "$");
+        Assert.AreEqual(flags.prefix , "dep");
+        Assert.AreEqual(flags.value, null);
+        Assert.AreEqual(flags.type,"args");
+        Assert.AreEqual(flags.helpinfo, null);
+        Assert.AreEqual(flags.nargs, "+");
+        Assert.AreEqual(flags.shortflag , null);
+        Assert.AreEqual(flags.cmdname, null);
+        Assert.AreEqual(flags.function, null);
+        Assert.AreEqual(flags.varname, "subnargs");
+        this.__opt_fail_check(flags);
+        return;
+    }
 }
 }

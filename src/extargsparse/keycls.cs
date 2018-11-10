@@ -471,6 +471,8 @@ public class KeyCls
                 }
             } else if (typ == "System.Int32") {
                 return this.m_nargs;
+            } else if (typ == "System.String") {
+                return this.m_nargs;
             }
             return 0;
             //this.__throw_exception(String.Format("not valid type [{0}] or value [{1}]", typ, this.m_nargs));
@@ -967,7 +969,8 @@ public class KeyCls
                 if (this.m_value == null) {
                     this.__throw_exception(String.Format("can not set for value null"));
                 }
-                string strval = (System.String)(this.m_value as JValue);
+                jval = this.m_value as JValue;
+                string strval = (System.String)jval.Value;
                 if (! "+*?".Contains(strval)) {
                     this.__throw_exception(String.Format("{0} not valid for $", strval));
                 }
