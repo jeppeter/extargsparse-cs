@@ -469,6 +469,8 @@ public class KeyCls
                     }
                     break;
                 }
+            } else if (typ == "System.Int32") {
+                return this.m_nargs;
             }
             return 0;
             //this.__throw_exception(String.Format("not valid type [{0}] or value [{1}]", typ, this.m_nargs));

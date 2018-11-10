@@ -542,5 +542,28 @@ public class keycls_Tests
         this.__opt_fail_check(flags);
         return;
     }
+
+    [Test]
+    public void test_A023()
+    {
+        JToken jval;
+        KeyCls flags;
+        jval = JToken.Parse("{\"prefix\":\"good\",\"value\":3.9,\"nargs\":1}");
+        flags = new KeyCls("","$flag## flag help ##",jval,false);
+        Assert.AreEqual(flags.flagname , "flag");
+        Assert.AreEqual(flags.prefix , "good");
+        Assert.AreEqual(flags.value, (double) 3.9);
+        Assert.AreEqual(flags.type,"float");
+        Assert.AreEqual(flags.helpinfo, " flag help ");
+        Assert.AreEqual(flags.nargs, 1);
+        Assert.AreEqual(flags.shortflag , null);
+        Assert.AreEqual(flags.cmdname, null);
+        Assert.AreEqual(flags.function, null);
+        Assert.AreEqual(flags.longopt, "--good-flag");
+        Assert.AreEqual(flags.shortopt, null);
+        Assert.AreEqual(flags.optdest, "good_flag");
+        Assert.AreEqual(flags.varname, "good_flag");
+        return;
+    }
 }
 }
