@@ -698,5 +698,28 @@ public class keycls_Tests
         Assert.AreEqual(flags.varname, "maxval");
         return;
     }
+
+    [Test]
+    public void test_A031()
+    {
+        JToken jval;
+        KeyCls flags;
+        jval = JToken.Parse("[\"maxval\"]");
+        flags = new KeyCls("","maxval|m",jval,false);
+        Assert.AreEqual(flags.flagname , "maxval");
+        Assert.AreEqual(flags.shortflag , "m");
+        Assert.AreEqual(flags.prefix , "");
+        Assert.AreEqual(flags.type,"list");
+        Assert.AreEqual(flags.value, jval);
+        Assert.AreEqual(flags.helpinfo, null);
+        Assert.AreEqual(flags.nargs, 1);
+        Assert.AreEqual(flags.cmdname, null);
+        Assert.AreEqual(flags.function, null);
+        Assert.AreEqual(flags.longopt, "--maxval");
+        Assert.AreEqual(flags.shortopt, "-m");
+        Assert.AreEqual(flags.optdest, "maxval");
+        Assert.AreEqual(flags.varname, "maxval");
+        return;
+    }
 }
 }
