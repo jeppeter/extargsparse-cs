@@ -911,5 +911,25 @@ public class keycls_Tests
         Assert.AreEqual(flag3.longopt,"--prefix-json");
         return;
     }
+
+    [Test]
+    public void test_A041()
+    {
+        KeyCls flags;
+        JToken jval;
+        jval = JToken.Parse("{\"nargs\":1,\"attr\":{\"func\":\"args_opt_func\",\"wait\": \"cc\"}}");
+        flags = new KeyCls("prefix","$json",jval,false);
+        Assert.AreEqual(flags.prefix , "prefix");
+        Assert.AreEqual(flags.isflag , true);
+        Assert.AreEqual(flags.attr.Attr("func"), "args_opt_func");
+        Assert.AreEqual(flags.attr.Attr("wait"), "cc");
+        Assert.AreEqual(flags.flagname, "json");
+        Assert.AreEqual(flags.shortflag, null);
+        Assert.AreEqual(flags.longopt , "--prefix-json");
+        Assert.AreEqual(flags.shortopt , null);
+        Assert.AreEqual(flags.optdest,"prefix_json");
+        Assert.AreEqual(flags.varname,"prefix_json");
+        return;
+    }
 }
 }

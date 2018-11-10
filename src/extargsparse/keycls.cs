@@ -49,6 +49,38 @@ namespace extargsparse
             }
         }
 
+        public KeyAttr(JObject jobj)
+        {
+            Dictionary<string,JToken> nobj;
+            List<String> keys;
+            int i;
+            JToken curv;
+            string typestr;
+            JValue nval;
+            nobj = jobj.ToObject<Dictionary<string,JToken>>();
+            keys = new List<String>(nobj.Keys);
+            for (i=0;i<keys.Count ;i++) {
+                curv = nobj[keys[i]];
+                if (curv == null) {
+                    continue;
+                }
+                typestr = curv.GetType().FullName;
+                if (typestr == "Newtonsoft.Json.Linq.JValue") {
+                    nval = curv as JValue;
+                    switch(nval.Type){
+                        case JTokenType.String:
+                            this.m_obj.Add(keys[i], (System.String)nval.Value);
+                            break;
+                        default:
+                            Console.Error.WriteLine("k[{0}] type [{1}] not valid",keys[i],nval.Type);
+                            break;
+                    }
+                } else {
+                    Console.Error.WriteLine("[{0}] type [{1}] not valid", keys[i], curv);
+                }                
+            }
+        }
+
         public string Attr(string key)
         {
             if (this.m_obj.ContainsKey(key)) {
@@ -671,6 +703,7 @@ public class KeyCls
         JValue jval;
         TypeClass typcls ;
         string strval;
+        string typestr;
         this.m_isflag = true;
         this.m_iscmd = false;
         this.m_origkey = key;
@@ -726,9 +759,14 @@ public class KeyCls
                     this.__set_value(k, nobj[k]);
                 }
             } else if (k == "attr") {
-                if (this.m_attr == null ) {
-                    strval = (string) nobj[k];
-                    this.m_attr = new KeyAttr(strval);
+                if (this.m_attr == null && nobj[k] != null) {
+                    typestr = nobj[k].GetType().FullName;
+                    if (typestr == "Newtonsoft.Json.Linq.JObject") {
+                        this.m_attr = new KeyAttr((JObject) nobj[k]);
+                    } else {
+                        strval = (string) nobj[k];
+                        this.m_attr = new KeyAttr(strval);
+                    }                    
                 }
             }
         }
