@@ -931,5 +931,22 @@ public class keycls_Tests
         Assert.AreEqual(flags.varname,"prefix_json");
         return;
     }
+
+    [Test]
+    public void test_A042()
+    {
+        KeyCls flags;
+        JToken jval;
+        jval = JToken.Parse("{}");
+        flags = new KeyCls("","main",jval,false);
+        Assert.AreEqual(flags.prefix , "main");
+        Assert.AreEqual(flags.isflag , false);
+        Assert.AreEqual(flags.iscmd , true);
+        Assert.AreEqual(flags.attr, null);
+        Assert.AreEqual(flags.cmdname, "main");
+        Assert.AreEqual(flags.function, null);
+        this.__opt_fail_check(flags);
+        return;
+    }
 }
 }
