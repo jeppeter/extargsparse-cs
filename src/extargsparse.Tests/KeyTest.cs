@@ -874,5 +874,27 @@ public class keycls_Tests
         Assert.AreEqual(flag3.Equals(flag4), false);
         return;
     }
+
+    [Test]
+    public void test_A039()
+    {
+        KeyCls flags;
+        JToken jval;
+        jval = JToken.Parse("{\"modules\" : [],\"$<NARGS>\" : \"+\"}");
+        flags = new KeyCls("rdep","ip",jval,false);
+        Assert.AreEqual(flags.iscmd , true);
+        Assert.AreEqual(flags.cmdname, "ip");
+        Assert.AreEqual(flags.prefix , "rdep");
+        jval = JToken.Parse("[]");
+        flags = new KeyCls("rdep_ip", "modules", jval,false);
+        Assert.AreEqual(flags.isflag , true);
+        Assert.AreEqual(flags.value, jval);
+        Assert.AreEqual(flags.prefix , "rdep_ip");
+        Assert.AreEqual(flags.longopt , "--rdep-ip-modules");
+        Assert.AreEqual(flags.shortopt , null);
+        Assert.AreEqual(flags.optdest,"rdep_ip_modules");
+        Assert.AreEqual(flags.varname,"rdep_ip_modules");
+        return;
+    }
 }
 }
