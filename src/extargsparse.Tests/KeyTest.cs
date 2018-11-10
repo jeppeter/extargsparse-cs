@@ -802,6 +802,7 @@ public class keycls_Tests
         Assert.AreEqual(flags.cmdname, null);
         Assert.AreEqual(flags.function, null);
         Assert.AreEqual(flags.varname, "newargs");
+        Assert.AreEqual(flags.attr, null);
         this.__opt_fail_check(flags);
         return;
     }

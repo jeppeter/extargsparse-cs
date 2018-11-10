@@ -26,7 +26,7 @@ public class KeyCls
     private static readonly string[] m_otherwords = new string[] {"origkey", "iscmd", "isflag", "type", "attr", "longprefix", "shortprefix"};
     private static readonly string[] m_formwords = new string[] {"longopt", "shortopt", "optdest", "needarg"};
 
-    protected class KeyAttr
+    public class KeyAttr
     {
         private char m_splitchar = ';';
         private Dictionary<string, string> m_obj = new Dictionary<string, string>();
@@ -480,6 +480,16 @@ public class KeyCls
         set {
             this.__throw_exception(String.Format("nargs can not set"));
         }
+    }
+
+    public KeyAttr attr
+    {
+        get {
+            return this.m_attr;
+        }
+        set {
+            this.__throw_exception(String.Format("attr can not set"));
+        }        
     }
 
     private Object __get_value(string name)
