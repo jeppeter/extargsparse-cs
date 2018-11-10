@@ -543,6 +543,26 @@ public class KeyCls
         }        
     }
 
+    public string longprefix
+    {
+        get {
+            return this.m_longprefix;
+        }
+        set {
+            this.__throw_exception(String.Format("longprefix can not set"));
+        }
+    }
+
+    public string shortprefix
+    {
+        get {
+            return this.m_shortprefix;
+        }
+        set {
+            this.__throw_exception(String.Format("shortprefix can not set"));
+        }
+    }
+
     private Object __get_value(string name)
     {
         if (Array.IndexOf(KeyCls.m_flagwords, name) >= 0) {
