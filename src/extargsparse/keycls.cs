@@ -8,24 +8,6 @@ using System.Diagnostics;
 
 namespace extargsparse
 {
-public class KeyCls
-{
-    private static readonly Regex m_helpexpr = new Regex("##([^\\#\\!\\+\\<\\>\\|]+)##$", RegexOptions.IgnoreCase);
-    private static readonly Regex m_cmdexpr = new Regex("^([^\\#\\<\\>\\+\\$\\!]+)", RegexOptions.IgnoreCase);
-    private static readonly Regex m_prefixexpr = new Regex("\\+([a-zA-Z]+[a-zA-Z_\\-0-9]*)", RegexOptions.IgnoreCase);
-    private static readonly Regex m_funcexpr = new Regex("<([^\\<\\>\\#\\$\\| \\t\\!]+)>", RegexOptions.IgnoreCase);
-    private static readonly Regex m_flagexpr = new Regex("^([a-zA-Z_\\|\\?\\-]+[a-zA-Z_0-9\\|\\?\\-]*)", RegexOptions.IgnoreCase);
-    private static readonly Regex m_mustflagexpr = new Regex("^\\$([a-zA-Z_\\|\\?]+[a-zA-Z_0-9\\|\\?\\-]*)", RegexOptions.IgnoreCase);
-    private static readonly Regex m_attrexpr = new Regex("\\!([^\\<\\>\\$!\\#\\|]+)\\!");
-
-
-    /*to get the flag words */
-    private static readonly string[] m_flagwords =  new string[] {"flagname", "helpinfo", "shortflag", "nargs", "varname"};
-    private static readonly string[] m_flagspecial = new string[] {"value", "prefix"};
-    private static readonly string[] m_cmdwords = new string[] {"cmdname", "function", "helpinfo"};
-    private static readonly string[] m_otherwords = new string[] {"origkey", "iscmd", "isflag", "type", "attr", "longprefix", "shortprefix"};
-    private static readonly string[] m_formwords = new string[] {"longopt", "shortopt", "optdest", "needarg"};
-
     public class KeyAttr
     {
         private char m_splitchar = ';';
@@ -93,6 +75,26 @@ public class KeyCls
             return rets;
         }
     }
+
+
+public class KeyCls
+{
+    private static readonly Regex m_helpexpr = new Regex("##([^\\#\\!\\+\\<\\>\\|]+)##$", RegexOptions.IgnoreCase);
+    private static readonly Regex m_cmdexpr = new Regex("^([^\\#\\<\\>\\+\\$\\!]+)", RegexOptions.IgnoreCase);
+    private static readonly Regex m_prefixexpr = new Regex("\\+([a-zA-Z]+[a-zA-Z_\\-0-9]*)", RegexOptions.IgnoreCase);
+    private static readonly Regex m_funcexpr = new Regex("<([^\\<\\>\\#\\$\\| \\t\\!]+)>", RegexOptions.IgnoreCase);
+    private static readonly Regex m_flagexpr = new Regex("^([a-zA-Z_\\|\\?\\-]+[a-zA-Z_0-9\\|\\?\\-]*)", RegexOptions.IgnoreCase);
+    private static readonly Regex m_mustflagexpr = new Regex("^\\$([a-zA-Z_\\|\\?]+[a-zA-Z_0-9\\|\\?\\-]*)", RegexOptions.IgnoreCase);
+    private static readonly Regex m_attrexpr = new Regex("\\!([^\\<\\>\\$!\\#\\|]+)\\!");
+
+
+    /*to get the flag words */
+    private static readonly string[] m_flagwords =  new string[] {"flagname", "helpinfo", "shortflag", "nargs", "varname"};
+    private static readonly string[] m_flagspecial = new string[] {"value", "prefix"};
+    private static readonly string[] m_cmdwords = new string[] {"cmdname", "function", "helpinfo"};
+    private static readonly string[] m_otherwords = new string[] {"origkey", "iscmd", "isflag", "type", "attr", "longprefix", "shortprefix"};
+    private static readonly string[] m_formwords = new string[] {"longopt", "shortopt", "optdest", "needarg"};
+
 
     protected class TypeClass
     {

@@ -806,5 +806,31 @@ public class keycls_Tests
         this.__opt_fail_check(flags);
         return;
     }
+
+    [Test]
+    public void test_A036()
+    {
+        JToken jval;
+        KeyCls flags;
+        KeyAttr attr;
+        jval = JToken.Parse("\"+\"");
+        flags = new KeyCls("prefix","$<newargs>!func=args_opt_func;wait=cc!",jval,false);
+        Assert.AreEqual(flags.flagname , "$");
+        Assert.AreEqual(flags.shortflag , null);
+        Assert.AreEqual(flags.prefix , "prefix");
+        Assert.AreEqual(flags.type,"args");
+        Assert.AreEqual(flags.value, null);
+        Assert.AreEqual(flags.helpinfo, null);
+        Assert.AreEqual(flags.nargs, "+");
+        Assert.AreEqual(flags.cmdname, null);
+        Assert.AreEqual(flags.function, null);
+        Assert.AreEqual(flags.varname, "newargs");
+        attr = flags.attr;
+        Assert.AreNotEqual(attr, null);
+        Assert.AreEqual(attr.Attr("func"), "args_opt_func");
+        Assert.AreEqual(attr.Attr("wait"), "cc");
+        this.__opt_fail_check(flags);
+        return;
+    }
 }
 }
