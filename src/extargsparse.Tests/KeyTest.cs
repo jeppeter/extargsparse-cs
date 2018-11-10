@@ -618,7 +618,7 @@ public class keycls_Tests
         Assert.AreEqual(flags.shortflag , "v");
         Assert.AreEqual(flags.prefix , "dep");
         Assert.AreEqual(flags.type,"count");
-        Assert.AreEqual(flags.value, 0);
+        Assert.AreEqual(flags.value, (System.Int64)0);
         Assert.AreEqual(flags.helpinfo, null);
         Assert.AreEqual(flags.nargs, 0);
         Assert.AreEqual(flags.cmdname, null);
@@ -641,7 +641,7 @@ public class keycls_Tests
         Assert.AreEqual(flags.shortflag , "v");
         Assert.AreEqual(flags.prefix , "");
         Assert.AreEqual(flags.type,"count");
-        Assert.AreEqual(flags.value, 0);
+        Assert.AreEqual(flags.value, (System.Int64)0);
         Assert.AreEqual(flags.helpinfo, " new help info ");
         Assert.AreEqual(flags.nargs, 0);
         Assert.AreEqual(flags.cmdname, null);
@@ -673,6 +673,29 @@ public class keycls_Tests
         Assert.AreEqual(flags.shortopt, "-R");
         Assert.AreEqual(flags.optdest, "rollback");
         Assert.AreEqual(flags.varname, "rollback");
+        return;
+    }
+
+    [Test]
+    public void test_A030()
+    {
+        JToken jval;
+        KeyCls flags;
+        jval = JToken.Parse("0xffffffff");
+        flags = new KeyCls("","maxval|m##max value set ##",jval,false);
+        Assert.AreEqual(flags.flagname , "maxval");
+        Assert.AreEqual(flags.shortflag , "m");
+        Assert.AreEqual(flags.prefix , "");
+        Assert.AreEqual(flags.type,"int");
+        Assert.AreEqual(flags.value, (System.Int64)0xffffffff);
+        Assert.AreEqual(flags.helpinfo, "max value set ");
+        Assert.AreEqual(flags.nargs, 1);
+        Assert.AreEqual(flags.cmdname, null);
+        Assert.AreEqual(flags.function, null);
+        Assert.AreEqual(flags.longopt, "--maxval");
+        Assert.AreEqual(flags.shortopt, "-m");
+        Assert.AreEqual(flags.optdest, "maxval");
+        Assert.AreEqual(flags.varname, "maxval");
         return;
     }
 }
