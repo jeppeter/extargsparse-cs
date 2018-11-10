@@ -948,5 +948,27 @@ public class keycls_Tests
         this.__opt_fail_check(flags);
         return;
     }
+
+    [Test]
+    public void test_A043()
+    {
+        KeyCls flags;
+        JToken jval;
+        jval = JToken.Parse("true");
+        flags = new KeyCls("","rollback|R## rollback not set ##",jval,true,false,false,"++","+");
+        Assert.AreEqual(flags.flagname,"rollback");
+        Assert.AreEqual(flags.shortflag,"R");
+        Assert.AreEqual(flags.prefix,"");
+        Assert.AreEqual(flags.type,"bool");
+        Assert.AreEqual(flags.value,true);
+        Assert.AreEqual(flags.helpinfo," rollback not set ");
+        Assert.AreEqual(flags.nargs,0);
+        Assert.AreEqual(flags.cmdname, null);
+        Assert.AreEqual(flags.function, null);
+        Assert.AreEqual(flags.optdest, "rollback");
+        Assert.AreEqual(flags.longopt, "++no-rollback");
+        Assert.AreEqual(flags.shortopt, "+R");
+        return;
+    }
 }
 }
