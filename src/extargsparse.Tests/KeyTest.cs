@@ -499,5 +499,26 @@ public class keycls_Tests
         Assert.AreEqual(ok ,1);
         return;
     }
+
+    [Test]
+    public void test_A021()
+    {
+        JToken jval;
+        KeyCls flags;
+        jval = JToken.Parse("{\"nargs\":\"?\",\"value\":null}");
+        flags = new KeyCls("command","$## self define ##",jval,false);
+        Assert.AreEqual(flags.iscmd , false);
+        Assert.AreEqual(flags.isflag , true);
+        Assert.AreEqual(flags.prefix , "command");
+        Assert.AreEqual(flags.varname, "subnargs");
+        Assert.AreEqual(flags.flagname , "$");
+        Assert.AreEqual(flags.shortflag , null);
+        Assert.AreEqual(flags.value, null);
+        Assert.AreEqual(flags.type,"args");
+        Assert.AreEqual(flags.nargs, "?");
+        Assert.AreEqual(flags.helpinfo, " self define ");
+        this.__opt_fail_check(flags);
+        return;
+    }
 }
 }
