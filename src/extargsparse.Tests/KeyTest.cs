@@ -565,5 +565,25 @@ public class keycls_Tests
         Assert.AreEqual(flags.varname, "good_flag");
         return;
     }
+
+    [Test]
+    public void test_A024()
+    {
+        KeyCls flags;
+        JToken jval;
+        int ok = 0;
+        try{
+            jval = JToken.Parse("{\"prefix\":\"good\",\"value\":false,\"nargs\":2}");
+            flags = new KeyCls("","$flag## flag help ##",jval,false);
+        }
+        catch(KeyException ec){
+            KeyException nec;
+            nec = ec;
+            ec = nec;
+            ok = 1;
+        }
+        Assert.AreEqual(ok ,1);
+        return;
+    }
 }
 }

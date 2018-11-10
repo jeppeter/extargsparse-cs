@@ -659,6 +659,7 @@ public class KeyCls
         TypeClass typcls;
         string typestr;
         int ival;
+        JValue jval;
         if (this.m_isflag) {
             Debug.Assert(!this.m_iscmd);
             if (this.m_function != null) {
@@ -709,7 +710,20 @@ public class KeyCls
 
             if (this.m_type == "bool") {
                 if (this.m_nargs != null ) {
-                    ival = (int) this.m_nargs;
+                    if (this.m_nargs == null) {
+                        this.__throw_exception(String.Format("nags null"));
+                    }
+                    typestr = this.m_nargs.GetType().FullName;
+                    if (typestr != "Newtonsoft.Json.Linq.JValue" &&
+                        typestr != "System.Int32" ) {
+                        this.__throw_exception(String.Format("not valid type [{0}] nargs", typcls.get_type()));
+                    }
+                    if (typestr == "Newtonsoft.Json.Linq.JValue") {
+                        jval = (JValue) this.m_nargs;
+                        ival = (int)((System.Int64) jval.Value);
+                    } else {
+                        ival = (int) this.nargs;    
+                    }                    
                     if (ival != 0) {
                         this.__throw_exception(String.Format("bool type ({0}) can not accept not 0 nargs", this.m_nargs));    
                     }                    
