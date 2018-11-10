@@ -606,5 +606,28 @@ public class keycls_Tests
         this.__opt_fail_check(flags);
         return;
     }
+
+    [Test]
+    public void test_A027()
+    {
+        JToken jval;
+        KeyCls flags;
+        jval = JToken.Parse("\"+\"");
+        flags = new KeyCls("dep","verbose|v",jval,false);
+        Assert.AreEqual(flags.flagname , "verbose");
+        Assert.AreEqual(flags.shortflag , "v");
+        Assert.AreEqual(flags.prefix , "dep");
+        Assert.AreEqual(flags.type,"count");
+        Assert.AreEqual(flags.value, 0);
+        Assert.AreEqual(flags.helpinfo, null);
+        Assert.AreEqual(flags.nargs, 0);
+        Assert.AreEqual(flags.cmdname, null);
+        Assert.AreEqual(flags.function, null);
+        Assert.AreEqual(flags.longopt, "--dep-verbose");
+        Assert.AreEqual(flags.shortopt, "-v");
+        Assert.AreEqual(flags.optdest, "dep_verbose");
+        Assert.AreEqual(flags.varname, "dep_verbose");
+        return;
+    }
 }
 }

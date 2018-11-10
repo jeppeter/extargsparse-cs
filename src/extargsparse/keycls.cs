@@ -313,7 +313,7 @@ public class KeyCls
                     val = (JValue) this.m_value;
                     switch(val.Type) {
                     case JTokenType.Integer:
-                        return (int) val.Value;
+                        return (int) (System.Int64)(val.Value);
                     case JTokenType.Float:
                         return (double) val.Value;
                     case JTokenType.String:
