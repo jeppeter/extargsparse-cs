@@ -629,5 +629,28 @@ public class keycls_Tests
         Assert.AreEqual(flags.varname, "dep_verbose");
         return;
     }
+
+    [Test]
+    public void test_A028()
+    {
+        JToken jval;
+        KeyCls flags;
+        jval = JToken.Parse("\"+\"");
+        flags = new KeyCls("","verbose|v## new help info ##",jval,false);
+        Assert.AreEqual(flags.flagname , "verbose");
+        Assert.AreEqual(flags.shortflag , "v");
+        Assert.AreEqual(flags.prefix , "");
+        Assert.AreEqual(flags.type,"count");
+        Assert.AreEqual(flags.value, 0);
+        Assert.AreEqual(flags.helpinfo, " new help info ");
+        Assert.AreEqual(flags.nargs, 0);
+        Assert.AreEqual(flags.cmdname, null);
+        Assert.AreEqual(flags.function, null);
+        Assert.AreEqual(flags.longopt, "--verbose");
+        Assert.AreEqual(flags.shortopt, "-v");
+        Assert.AreEqual(flags.optdest, "verbose");
+        Assert.AreEqual(flags.varname, "verbose");
+        return;
+    }
 }
 }
