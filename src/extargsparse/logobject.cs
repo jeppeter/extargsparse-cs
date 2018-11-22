@@ -45,8 +45,8 @@ namespace extargsparse
 				throw new ParseException(String.Format("can not be call directly by outer namespace [{0}]", curnamespace));
 			}
 			this._create_repository(cmdname);
-			if (LogManager.Exists(cmdname,cmdname) != null) {
-				
+			if (LogManager.Exists(cmdname,cmdname) == null) {
+
 			} else {
 
 			}
