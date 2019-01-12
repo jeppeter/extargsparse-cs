@@ -5,6 +5,8 @@ using log4net.Appender;
 using log4net.Layout;
 using log4net.Repository.Hierarchy;
 using System.Diagnostics;
+using System.Reflection;
+using System.Collections.Generic;
 
 namespace extargsparse
 {
@@ -34,21 +36,32 @@ namespace extargsparse
 		public _LogObject(string cmdname="extargsparse")
 		{
 			string curnamespace,callernamespace;
-			Logger l;
 			string lvlstr = "ERROR";
 			string appname = String.Format("{0}_APPENDER", cmdname).ToUpper();
 			ConsoleAppender app=null;
-			/*now first to get the class*/
-			curnamespace = get_namespace(1);
-			callernamespace = get_namespace(2);
-			if (curnamespace != callernamespace) {
-				throw new ParseException(String.Format("can not be call directly by outer namespace [{0}]", curnamespace));
-			}
-			this._create_repository(cmdname);
-			if (LogManager.Exists(cmdname,cmdname) == null) {
-
+			string lvlstr="DEBUG";
+			string appname = String.Format("{0}_APPENDER", name).ToUpper();
+			ConsoleAppender app=null;
+			this._create_repository(name);
+			if (LogManager.Exists(name,name) != null) {
+				this.m_logger = LogManager.GetLogger(name,name);
+				l = (Logger) this.m_logger.Logger;
+				l.Level = l.Hierarchy.LevelMap[lvlstr];
 			} else {
-
+				PatternLayout patternLayout = new PatternLayout();
+				Hierarchy hr;
+				patternLayout.ConversionPattern = "%date [%thread] %-5level %logger - %message%newline";
+				patternLayout.ActivateOptions();
+				this.m_logger = LogManager.GetLogger(name,name);
+				l = (Logger) this.m_logger.Logger;
+				l.Level = l.Hierarchy.LevelMap[lvlstr];
+				app = new ConsoleAppender();
+				app.Name = appname;
+				app.Layout = patternLayout;
+				//app.Target = "Console.Error";
+				l.AddAppender(app);
+				hr = (Hierarchy)LogManager.GetRepository(name);
+				hr.Configured = true;
 			}
 		}
 		private interface _NC
