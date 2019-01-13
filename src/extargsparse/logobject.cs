@@ -7,12 +7,62 @@ using log4net.Repository.Hierarchy;
 using System.Diagnostics;
 using System.Reflection;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace extargsparse
 {
 	public class _LogObject
 	{
 		private ILog m_logger;
+
+		private class Mux
+		{
+			private Mutex m;
+			private bool waited = false;
+			public Mux(string name)
+			{
+				bool created = false;
+			try_again:
+				m = null;
+				try {
+					m = Mutex.OpenExisting(name);
+				}
+				catch(WaitHandleCannotBeOpenedException) {
+					m = new Mutex(true,name,out created);
+					if (!created) {
+						goto try_again;
+					}
+				}
+			wait_one:
+				try {
+					m.WaitOne();				
+					waited = true;				
+				}
+				catch(AbandonedMutexException) {
+					if (m != null) {
+						goto wait_one;
+					}
+				}
+			}
+
+			public void Close()
+			{
+				if (m != null) {
+					if (waited) {
+						m.ReleaseMutex();
+					}
+					waited = true;
+					m.Dispose();
+				}
+				m = null;
+			}
+
+			~Mux()
+			{
+				this.Close();
+			}
+		}
+
 
 		private string get_namespace(int stknum)
 		{
@@ -33,33 +83,67 @@ namespace extargsparse
 			return true;
 		}
 
-		public _LogObject(string name="extargsparse")
+		public _LogObject(string cmdname="extargsparse")
 		{
-			//string curnamespace,callernamespace;
-			string lvlstr="DEBUG";
-			string appname = String.Format("{0}_APPENDER", name).ToUpper();
-			ConsoleAppender app=null;
+			string curnamespace,callernamespace;
 			Logger l;
-			this._create_repository(name);
-			if (LogManager.Exists(name,name) != null) {
-				this.m_logger = LogManager.GetLogger(name,name);
-				l = (Logger) this.m_logger.Logger;
-				l.Level = l.Hierarchy.LevelMap[lvlstr];
+			string lvlstr = "ERROR";
+			string appname = String.Format("{0}_APPENDER", cmdname).ToUpper();
+			string loglvl = String.Format("{0}_LOGLVL",cmdname).ToUpper();
+			int ival=0;
+			ConsoleAppender app=null;
+			Mux mux = new Mux(cmdname);
+			string logval  = Environment.GetEnvironmentVariable(loglvl);
+			if (logval != "") {
+				try {
+					ival = Int32.Parse(logval);
+				}
+				catch(Exception) {
+					ival = 0;
+				}
+			}
+
+			if (ival <= 0) {
+				lvlstr = "ERROR";
+			} else if (ival <= 1) {
+				lvlstr = "WARN";
+			} else if (ival <= 2) {
+				lvlstr = "INFO";
+			} else if (ival <= 3) {
+				lvlstr = "DEBUG";
 			} else {
-				PatternLayout patternLayout = new PatternLayout();
-				Hierarchy hr;
-				patternLayout.ConversionPattern = "%date [%thread] %-5level %logger - %message%newline";
-				patternLayout.ActivateOptions();
-				this.m_logger = LogManager.GetLogger(name,name);
-				l = (Logger) this.m_logger.Logger;
-				l.Level = l.Hierarchy.LevelMap[lvlstr];
-				app = new ConsoleAppender();
-				app.Name = appname;
-				app.Layout = patternLayout;
-				//app.Target = "Console.Error";
-				l.AddAppender(app);
-				hr = (Hierarchy)LogManager.GetRepository(name);
-				hr.Configured = true;
+				lvlstr = "ALL";
+			}
+
+			/*now first to get the class*/
+			try {
+				curnamespace = get_namespace(1);
+				callernamespace = get_namespace(2);
+				if (curnamespace != callernamespace) {
+					throw new ParserException(String.Format("can not be call directly by outer namespace [{0}]", curnamespace));
+				}
+				this._create_repository(cmdname);
+				if (LogManager.Exists(cmdname,cmdname) == null) {
+					PatternLayout patternLayout = new PatternLayout();
+					Hierarchy hr;
+					patternLayout.ConversionPattern = "%date [%thread] %-5level %logger - %message%newline";
+					patternLayout.ActivateOptions();
+					this.m_logger = LogManager.GetLogger(cmdname,cmdname);
+					l = (Logger) this.m_logger.Logger;
+					l.Level = l.Hierarchy.LevelMap[lvlstr];
+					app = new ConsoleAppender();
+					app.Name = appname;
+					app.Layout = patternLayout;
+					//app.Target = "Console.Error";
+					l.AddAppender(app);
+					hr = (Hierarchy)LogManager.GetRepository(cmdname);
+					hr.Configured = true;
+				} else {
+					this.m_logger = LogManager.GetLogger(cmdname,cmdname);
+				}
+			}
+			finally {
+				mux.Close();
 			}
 		}
 		private interface _NC
