@@ -33,15 +33,13 @@ namespace extargsparse
 			return true;
 		}
 
-		public _LogObject(string cmdname="extargsparse")
+		public _LogObject(string name="extargsparse")
 		{
-			string curnamespace,callernamespace;
-			string lvlstr = "ERROR";
-			string appname = String.Format("{0}_APPENDER", cmdname).ToUpper();
-			ConsoleAppender app=null;
+			//string curnamespace,callernamespace;
 			string lvlstr="DEBUG";
 			string appname = String.Format("{0}_APPENDER", name).ToUpper();
 			ConsoleAppender app=null;
+			Logger l;
 			this._create_repository(name);
 			if (LogManager.Exists(name,name) != null) {
 				this.m_logger = LogManager.GetLogger(name,name);
@@ -85,7 +83,7 @@ namespace extargsparse
 				if (o is T) {
 					this.m_list.Add((T)o);
 				} else {
-					throw new ParseException(String.Format("not type of  [{0}]", typeof(T).FullName));
+					throw new ParserException(String.Format("not type of  [{0}]", typeof(T).FullName));
 				}
 			}
 
@@ -119,7 +117,7 @@ namespace extargsparse
 			Type me = tlist.MakeGenericType(typeargs);
 			_NC arrlist = Activator.CreateInstance(me) as _NC;
 			if (arrlist == null) {
-				throw new ParseException(String.Format("can not create generic for [{0}]", typename));
+				throw new ParserException(String.Format("can not create generic for [{0}]", typename));
 			}
 			return arrlist;
 		}
@@ -129,7 +127,7 @@ namespace extargsparse
 			MethodInfo minfo;
 			minfo = arrlist.GetType().GetMethod("ToArray", BindingFlags.NonPublic | BindingFlags.Instance);
 			if (minfo == null) {
-				throw new ParseException(String.Format("no ToArray"));
+				throw new ParserException(String.Format("no ToArray"));
 			}
 			return (object) minfo.Invoke(arrlist,new object[0]);
 		}
@@ -137,7 +135,7 @@ namespace extargsparse
 
 		private void __throw_exception(string s)
 		{
-			throw new ParseException(s);
+			throw new ParserException(s);
 		}
 
 		private object[] _get_param_args(object[] args,ParameterInfo[] paraminfos)
@@ -237,7 +235,7 @@ namespace extargsparse
 						this._get_param_args(args,paraminfos);
 						okmeths.Add(curmeth);
 					}
-					catch(ParseException e) {
+					catch(ParserException e) {
 						Console.Error.WriteLine("catch error [{0}]", e);
 					}
 				}
