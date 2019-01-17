@@ -236,5 +236,14 @@ namespace extargsparse
 			return bval;
 		}
 
+		public string format()
+		{
+			string retstr="";
+			foreach(var kv in this.m_dict) {
+				retstr += String.Format("{0}={1};", kv.Key, kv.Value);
+			}
+			return retstr;
+		}
+
 	}
 }
