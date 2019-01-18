@@ -217,7 +217,7 @@ namespace extargsparse
 		}
 
 
-		private void __throw_exception(string s)
+		public void throw_exception(string s)
 		{
 			throw new ParserException(s);
 		}
@@ -235,21 +235,21 @@ namespace extargsparse
 				newargs = new object[paraminfos.Length];
 				for (i=0;i < (paraminfos.Length - 1) ; i++) {
 					if (!(args[i].GetType().IsSubclassOf(paraminfos[i].ParameterType) || args[i].GetType().Equals(paraminfos[i].ParameterType))) {
-						this.__throw_exception(String.Format("[{0}] not subclass of [{1}] [{2}]", i, paraminfos[i].ParameterType.Name, args[i].GetType().Name));
+						this.throw_exception(String.Format("[{0}] not subclass of [{1}] [{2}]", i, paraminfos[i].ParameterType.Name, args[i].GetType().Name));
 					}
 					newargs[i] = args[i];
 				}
 
 				lastparam = paraminfos[(paraminfos.Length - 1)];
 				if (!lastparam.ParameterType.IsArray){
-					this.__throw_exception(String.Format("last param not array"));
+					this.throw_exception(String.Format("last param not array"));
 				}
 				lasttype = lastparam.ParameterType.GetElementType();
 				lastargs = new object[(args.Length - paraminfos.Length+1)];
 				cc = this.__make_arrays(lastparam.ParameterType.GetElementType().FullName);
 				for (i=(paraminfos.Length - 1),j=0;i<args.Length;i++,j ++) {
 					if (!(args[i].GetType().IsSubclassOf(lasttype) || args[i].GetType().Equals(lasttype))) {
-						this.__throw_exception(String.Format("[{0}] not subclass of [{1}] [{2}]", i, lastparam.ParameterType.Name,args[i].GetType().Name));
+						this.throw_exception(String.Format("[{0}] not subclass of [{1}] [{2}]", i, lastparam.ParameterType.Name,args[i].GetType().Name));
 					}
 					this.__add_object(cc,args[i]);
 				}
@@ -258,7 +258,7 @@ namespace extargsparse
 				newargs = new object[paraminfos.Length];
 				for (i=0; i < args.Length; i++) {
 					if (!(args[i].GetType().IsSubclassOf(paraminfos[i].ParameterType) || args[i].GetType().Equals(paraminfos[i].ParameterType))) {
-						this.__throw_exception(String.Format("[{0}] not subclass of [{1}]", i, paraminfos[i].ParameterType.Name));
+						this.throw_exception(String.Format("[{0}] not subclass of [{1}]", i, paraminfos[i].ParameterType.Name));
 					}
 					newargs[i] = args[i];
 				}
@@ -277,7 +277,7 @@ namespace extargsparse
 						newargs[i] = paraminfos[i].DefaultValue;
 					}
 					if (!bsucc) {
-						this.__throw_exception(String.Format("[{0}] param not default", i));
+						this.throw_exception(String.Format("[{0}] param not default", i));
 					}
 					
 				}
@@ -297,7 +297,7 @@ namespace extargsparse
 							}
 						}
 						if (! bsucc) {
-							this.__throw_exception(String.Format("[{0}] not subclass of [{1}] [{2}]", i, paraminfos[i].ParameterType.Name, args[i].GetType().Name));	
+							this.throw_exception(String.Format("[{0}] not subclass of [{1}] [{2}]", i, paraminfos[i].ParameterType.Name, args[i].GetType().Name));	
 						}
 						
 					}
@@ -418,7 +418,7 @@ namespace extargsparse
 			object[] newargs;
 			ParameterInfo[] paraminfos;
 			if (funcname.Length == 0) {
-				this.__throw_exception(String.Format("null funcname can not accept"));
+				this.throw_exception(String.Format("null funcname can not accept"));
 			}
 
 			sarr = funcname.Split('.');
@@ -460,7 +460,7 @@ namespace extargsparse
 			}
 
 			if (meth == null) {
-				this.__throw_exception(String.Format("can not find [{0}] method", funcname));
+				this.throw_exception(String.Format("can not find [{0}] method", funcname));
 			}
 			paraminfos = meth.GetParameters();
 			newargs = this._get_param_args(args,paraminfos);
