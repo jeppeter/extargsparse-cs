@@ -448,5 +448,25 @@ namespace extargsparse
 				this.throw_exception(String.Format("can not set version"));
 			}
 		}
+
+		public List<_ParserCompact> subcommands 
+		{
+			get {
+				return this.m_subcommands;
+			}
+			set {
+				this.throw_exception(String.Format("can not set subcommands"));
+			}
+		}
+
+		public KeyCls keycls
+		{
+			get {
+				return this.m_keycls;
+			}
+			set {
+				this.throw_exception(String.Format("can not set keycls"));
+			}
+		}
 	}
 }

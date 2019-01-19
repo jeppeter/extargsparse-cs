@@ -45,5 +45,33 @@ namespace extargsparse
 			this.m_parseall = optattr.get_bool("parseall");
 			this.m_leftargs = new List<string>();
 		}
+
+		public string format_cmdname_path(List<_ParserCompact> curparser=null) {
+			string cmdname = "";
+			if (curparser == null) {
+				curparser = this.m_cmdpaths;
+			}
+			foreach( var c in curparser) {
+				if (cmdname.Length > 0) {
+					cmdname += ".";
+				}
+				cmdname += c.cmdname;
+			}
+			return cmdname;
+		}
+
+		private KeyCls __find_sub_command(string name) {
+			_ParserCompact cmdparent = null;
+			cmdparent = this.m_cmdpaths[(this.m_cmdpaths.Count - 1)];
+			if (cmdparent != null) {
+				foreach(var cmd in cmdparent.subcommands) {
+					if (cmd.cmdname == name) {
+						this.m_cmdpaths.Add(cmd);
+						return cmd.keycls;
+					}
+				}
+			}
+			return null;
+		}
 	}
 }
