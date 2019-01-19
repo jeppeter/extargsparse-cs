@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace extargsparse
 {
@@ -94,6 +95,65 @@ namespace extargsparse
 				this.Info(String.Format("longargs [{0}] nargs [{1}]", this.m_longargs, nargs));
 			}
 			return;
+		}
+
+		private KeyCls __find_key_cls(){
+			int oldcharidx ;
+			int oldidx;
+			char curch;
+			int idx;
+			if (this.m_ended > 0) {
+				return null;
+			}
+			if (this.m_longargs > 0) {
+				System.Diagnostics.Debug.Assert(this.m_curcharidx < 0);
+				this.m_curidx += this.m_longargs;
+				System.Diagnostics.Debug.Assert(this.m_args.Length >= this.m_curidx);
+				this.m_longargs = -1;
+				this.m_validx = -1;
+				this.m_keyidx = -1;
+			}
+
+			oldcharidx = this.m_curcharidx;
+			oldidx = this.m_curidx;
+			if (oldidx >= this.m_args.Length) {
+				this.m_curidx = oldidx;
+				this.m_curcharidx = -1;
+				this.m_shortcharargs = -1;
+				this.m_longargs = -1;
+				this.m_keyidx = -1;
+				this.m_validx = -1;
+				this.m_ended = 1;
+				return null;
+			}
+			if (oldcharidx >= 0) {
+				string c;
+				c = this.m_args[oldidx];
+				if (c.Length <= oldcharidx) {
+					oldidx += 1;
+					this.Info(String.Format("oldidx [{0}]", oldidx));
+					if (this.m_shortcharargs > 0) {
+						oldidx += this.m_shortcharargs;
+					}
+					this.Info(String.Format("oldidx [%s] __shortcharargs [%d]",oldidx,this.m_shortcharargs));
+					this.m_curidx = oldidx;
+					this.m_curcharidx = -1;
+					this.m_shortcharargs = -1;
+					this.m_keyidx = -1;
+					this.m_validx = -1;
+					this.m_longargs = -1;
+					return this.__find_key_cls();
+				} 
+				curch = c[oldcharidx];
+				this.Info(String.Format("argv[{0}][{1}] {2}", oldidx, oldcharidx, curch));
+				idx = this.m_cmdpaths.Count -1;
+				while( idx >= 0) {
+					
+				}
+			} else {
+
+			}
+			return null;
 		}
 
 	}
