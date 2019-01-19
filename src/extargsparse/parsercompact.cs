@@ -21,12 +21,6 @@ namespace extargsparse
 		private string m_usage;
 		private string m_version;
 
-		public string format()
-		{
-			string s ="";
-			return s;
-		}
-
 		public _ParserCompact(KeyCls kcls=null, ExtArgsOptions opt=null) : base()
 		{
 			JToken tok;
@@ -383,6 +377,37 @@ namespace extargsparse
 			this.Info(String.Format("{0}",s));
 			return s;
 		}
+
+		public string format()
+		{
+			string s ="";
+			int i;
+			s += String.Format("@{0}|", this.m_cmdname);
+			if (this.m_subcommands.Count > 0) {
+				s += String.Format("subcommands<{0}<", this.m_subcommands.Count);
+				i = 0;
+				foreach( var c in this.m_subcommands) {
+					if (i > 0) {
+						s += "|";
+					}
+					s += String.Format("{0}",c.cmdname);
+					i ++;
+				}
+				s += ">";
+			}
+
+			if (this.m_cmdopts.Count > 0) {
+				s += String.Format("cmdopts[{0}]<", this.m_cmdopts.Count);
+				i = 0;
+				foreach( var o in this.m_cmdopts) {
+					s += String.Format("{0}", o);
+				}
+				s += ">";
+			}
+			return s;
+		}
+
+
 
 		public string cmdname
 		{
