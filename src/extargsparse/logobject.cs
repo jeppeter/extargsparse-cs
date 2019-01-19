@@ -146,6 +146,68 @@ namespace extargsparse
 				mux.Close();
 			}
 		}
+
+		private string __get_caller(int callstack)
+		{
+			StackTrace stk = new StackTrace(true);
+			string retstr = "";
+			if (callstack < stk.FrameCount) {
+				StackFrame frm = stk.GetFrame(callstack);
+				retstr += String.Format("[{0}:{1}] ", frm.GetFileName(), frm.GetFileLineNumber());
+			}
+			return retstr;
+		}
+
+		public void Debug(string msg, int callstack=1)
+		{
+			string callmsg;
+			callmsg = this.__get_caller(callstack + 1);
+			callmsg += " ";
+			callmsg += msg;
+
+			this.m_logger.Debug(callmsg);
+		}
+
+		public void Error(string msg, int callstack=1)
+		{
+			string callmsg;
+			callmsg = this.__get_caller(callstack + 1);
+			callmsg += " ";
+			callmsg += msg;
+
+			this.m_logger.Error(callmsg);
+		}
+
+		public void Warn(string msg, int callstack=1)
+		{
+			string callmsg;
+			callmsg = this.__get_caller(callstack + 1);
+			callmsg += " ";
+			callmsg += msg;
+
+			this.m_logger.Warn(callmsg);
+		}
+
+		public void Info(string msg, int callstack=1)
+		{
+			string callmsg;
+			callmsg = this.__get_caller(callstack + 1);
+			callmsg += " ";
+			callmsg += msg;
+
+			this.m_logger.Info(callmsg);
+		}
+
+		public void Fatal(string msg, int callstack=1)
+		{
+			string callmsg;
+			callmsg = this.__get_caller(callstack + 1);
+			callmsg += " ";
+			callmsg += msg;
+
+			this.m_logger.Fatal(callmsg);
+		}		
+
 		private interface _NC
 		{
 			int Count();

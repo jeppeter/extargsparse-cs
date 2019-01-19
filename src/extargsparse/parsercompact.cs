@@ -21,12 +21,17 @@ namespace extargsparse
 		private string m_usage;
 		private string m_version;
 
+		public string format()
+		{
+			string s ="";
+			return s;
+		}
 
 		public _ParserCompact(KeyCls kcls=null, ExtArgsOptions opt=null) : base()
 		{
 			JToken tok;
 			if (kcls != null) {
-				Debug.Assert(kcls.iscmd);
+				System.Diagnostics.Debug.Assert(kcls.iscmd);
 				this.m_keycls = kcls;
 				this.m_cmdname = kcls.cmdname;
 				this.m_cmdopts = new List<KeyCls>();
@@ -204,9 +209,178 @@ namespace extargsparse
 
 		public string get_help_info(_HelpSize helpsize=null,List<_ParserCompact> parentcmds=null) {
 			string s="";
+			_ParserCompact rootcmd= null;
+			_ParserCompact curcmd=null;
+			int i;
+			string curs;
+			string fmts;
+			string simpfmts;
 			if (helpsize == null) {
 				helpsize = this.get_help_size();
 			}
+			if (parentcmds == null && this.m_usage != "") {
+				s += String.Format("{0}", this.m_usage);
+			} else {
+				rootcmd = this;
+				curcmd = this;
+				if (parentcmds != null && parentcmds.Count > 0) {
+					curcmd = parentcmds[0];
+				}
+				this.Debug(String.Format("curcmd {0}", curcmd.format()));
+				if (rootcmd.prog != "") {
+					s += rootcmd.prog;
+				} else {
+					if (Environment.GetCommandLineArgs().Length > 0) {
+						s += Environment.GetCommandLineArgs()[0];
+					}					
+				}
+				if (rootcmd.version != "") {
+					s += String.Format(" {0}", rootcmd.version);
+				}
+
+				if (parentcmds.Count > 0) {
+					foreach(var cmd in parentcmds) {
+						s += String.Format(" {0}", cmd.cmdname);
+					}
+				}
+				s += String.Format(" {0}", this.cmdname);
+				if (curcmd.helpinfo != "") {
+					s += String.Format(" {0}", curcmd.helpinfo);
+				} else {
+					if (this.m_cmdopts.Count > 0) {
+						s += String.Format(" [OPTIONS]");
+					}
+					if (this.m_subcommands.Count > 0) {
+						s += String.Format(" [SUBCOMMANDS]");
+					}
+					foreach(var args in this.m_cmdopts) {
+						if (args.flagname == "$") {
+							string ftype ;
+							object nargs = args.nargs;
+							string sval;
+							int ival;
+							ftype = nargs.GetType().FullName;
+							if (ftype == "System.String") {
+								sval = (string) nargs;
+								if (sval == "+") {
+									s += " args...";
+								} else if (sval == "*") {
+									s += " [args...]";
+								} else if (sval == "?") {
+									s += " arg";
+								}
+							} else {
+								ival = (int) nargs;
+								if (ival > 1) {
+									s += " args...";
+								} else if (ival == 1) {
+									s += " arg";
+								}
+							}
+						}
+					}
+				}
+				s += "\n";
+			}
+
+			if (this.m_description != "") {
+				s += String.Format("{0}\n", this.m_description);
+			}
+			if (this.m_cmdopts.Count > 0) {
+				s += "[OTPIONS]\n";
+				fmts = "{";
+				fmts += "0,";
+				fmts += String.Format("-{0}",helpsize.optnamesize);
+				fmts += "} {";
+				fmts += "1,";
+				fmts += String.Format("-{0}",helpsize.optexprsize);
+				fmts += "} {";
+				fmts += "2,";
+				fmts += String.Format("-{0}", helpsize.opthelpsize);
+				fmts += "}";
+				simpfmts = "{";
+				simpfmts += "0,";
+				simpfmts += String.Format("-{0}", helpsize.optnamesize);
+				simpfmts += "} {";
+				simpfmts += "1,";
+				simpfmts += String.Format("-{0}", helpsize.optexprsize);
+				simpfmts += "}";
+				foreach( var opt in this.m_cmdopts) {
+					string optname,optexpr,opthelp;
+					if (opt.type == "args") {
+						continue;
+					}
+					optname = this._get_opt_name(opt);
+					optexpr = this._get_opt_expr(opt);
+					opthelp = this._get_opt_info(opt);
+					curs = "";
+					for (i=0; i < 4 ;i++) {
+						curs += " ";
+					}
+					curs += String.Format(fmts, optname,optexpr,opthelp);
+					if (curs.Length < this.m_screenwidth) {
+						s += curs + "\n";
+					} else {
+						curs = "";
+						for (i=0;i< 4 ;i++) {
+							curs += " ";
+						}
+						curs += String.Format(simpfmts, optname, optexpr);
+						s += curs + "\n";
+						if (this.m_screenwidth > 60) {
+							s += this._get_indent_string(curs,20,this.m_screenwidth);
+						} else {
+							s += this._get_indent_string(curs,15,this.m_screenwidth);
+						}
+					}
+				}
+			}
+
+			if (this.m_subcommands.Count > 0) {
+				s += "[SUBCOMMANDS]\n";
+				fmts = "{";
+				fmts += "0,";
+				fmts += String.Format("-{0}", helpsize.cmdnamesize);
+				fmts += "} {";
+				fmts += "1,";
+				fmts += String.Format("-{1}", helpsize.cmdhelpsize);
+				fmts += "}";
+				simpfmts = "{";
+				simpfmts += "0,";
+				simpfmts += String.Format("-{0}", helpsize.cmdnamesize);
+				simpfmts += "}";
+				foreach(var cmd in this.m_subcommands) {
+					string cmdname;
+					string cmdhelp;
+					cmdname = cmd.cmdname;
+					cmdhelp = cmd.helpinfo;
+					curs = "";
+					for (i=0; i < 4;i++) {
+						curs += " ";
+					}
+					curs += String.Format(fmts,cmdname,cmdhelp);
+					if (curs.Length < this.m_screenwidth) {
+						s += curs + "\n";
+					} else {
+						curs = "";
+						for (i= 0 ;i < 4 ;i++) {
+							curs += " ";
+						}
+						curs += String.Format(simpfmts, cmdname);
+						s += curs + "\n";
+						if (this.m_screenwidth >= 60) {
+							s += this._get_indent_string(cmdhelp,20,this.m_screenwidth);
+						}else {
+							s += this._get_indent_string(cmdhelp, 15, this.m_screenwidth);
+						}
+					}
+				}
+			}
+
+			if (this.m_epilog != "") {
+				s += String.Format("\n{0}\n", this.m_epilog);
+			}
+			this.Info(String.Format("{0}",s));
 			return s;
 		}
 
@@ -216,7 +390,7 @@ namespace extargsparse
 				return this.m_cmdname;
 			}
 			set{
-				this.throw_exception(String.Format("can not get cmdname"));
+				this.throw_exception(String.Format("can not set cmdname"));
 			}
 		}
 
@@ -226,9 +400,28 @@ namespace extargsparse
 				return this.m_helpinfo;
 			}
 			set {
-				this.throw_exception(String.Format("can not get helpinfo"));
+				this.throw_exception(String.Format("can not set helpinfo"));
 			}
 		}
 
+		public string prog
+		{
+			get {
+				return this.m_prog;
+			}
+			set {
+				this.throw_exception(String.Format("can not set prog"));
+			}
+		}
+
+		public string version
+		{
+			get {
+				return this.m_version;
+			}
+			set {
+				this.throw_exception(String.Format("can not set version"));
+			}
+		}
 	}
 }
