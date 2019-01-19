@@ -468,5 +468,15 @@ namespace extargsparse
 				this.throw_exception(String.Format("can not set keycls"));
 			}
 		}
+
+		public List<KeyCls> cmdopts
+		{
+			get {
+				return this.m_cmdopts;
+			}
+			set {
+				this.throw_exception(String.Format("can not set cmdopts"));
+			}		
+		}
 	}
 }
