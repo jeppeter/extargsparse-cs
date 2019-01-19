@@ -66,7 +66,7 @@ namespace extargsparse
 			}
 		}
 
-		private string _get_opt_helpname(KeyCls opt){
+		private string _get_opt_name(KeyCls opt){
 			string optname = "";
 			optname += opt.longopt;
 			if (opt.shortopt != "") {
@@ -137,13 +137,61 @@ namespace extargsparse
 
 		public _HelpSize get_help_size(_HelpSize helpsize=null,int recursive=0) {
 			_HelpSize retsize = helpsize;
+			string optname,optexpr,opthelp;
 			if (retsize == null) {
 				retsize = new _HelpSize();
 			}
 			retsize.cmdnamesize = this.m_cmdname.Length;
 			retsize.cmdhelpsize = this.m_helpinfo.Length;
 
+			foreach( var opt in this.m_cmdopts) {
+				if (opt.type == "args") {
+					continue;
+				}
+				optname = this._get_opt_name(opt);
+				optexpr = this._get_opt_expr(opt);
+				opthelp = this._get_opt_info(opt);
+				retsize.optnamesize = optname.Length + 1;
+				retsize.optexprsize = optexpr.Length + 1;
+				retsize.opthelpsize = opthelp.Length + 1;
+			}
+
+			if (recursive != 0) {
+				foreach(var cmd in this.m_subcommands) {
+					if (recursive > 0) {
+						retsize = cmd.get_help_size(retsize,recursive - 1);
+					} else {
+						retsize = cmd.get_help_size(retsize,recursive);
+					}
+				}
+			}
+
+			foreach(var cmd in this.m_subcommands) {
+				retsize.cmdnamesize = cmd.cmdname.Length + 2;
+				retsize.cmdhelpsize = cmd.helpinfo.Length;
+			}
+
 			return retsize;
+		}
+
+		public string cmdname
+		{
+			get{
+				return this.m_cmdname;
+			}
+			set{
+				this.throw_exception(String.Format("can not get cmdname"));
+			}
+		}
+
+		public string helpinfo
+		{
+			get{
+				return this.m_helpinfo;
+			}
+			set {
+				this.throw_exception(String.Format("can not get helpinfo"));
+			}
 		}
 
 	}
