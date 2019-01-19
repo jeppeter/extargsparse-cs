@@ -73,5 +73,28 @@ namespace extargsparse
 			}
 			return null;
 		}
+
+		public void add_parse_args(int nargs) {
+			if (this.m_curidx >= 0) {
+				if (nargs > 0 && this.m_shortcharargs >0) {
+					this.throw_exception(String.Format("{0} already set args", this.m_args[this.m_curidx]));
+				}
+				if (this.m_shortcharargs < 0) {
+					this.m_shortcharargs = 0;
+				}
+				this.m_shortcharargs += nargs;
+			} else {
+				if (this.m_longargs > 0) {
+					this.throw_exception(String.Format("{0} not handled", this.m_args[this.m_curidx]));
+				}
+				if (this.m_longargs < 0) {
+					this.m_longargs = 0;
+				}
+				this.m_longargs += nargs;
+				this.Info(String.Format("longargs [{0}] nargs [{1}]", this.m_longargs, nargs));
+			}
+			return;
+		}
+
 	}
 }
