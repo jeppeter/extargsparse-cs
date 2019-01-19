@@ -174,6 +174,42 @@ namespace extargsparse
 			return retsize;
 		}
 
+		private string _get_indent_string(string s,int indentsize, int maxsize) {
+			string rets="";
+			string curs="";
+			int i,j;
+			char[] trimchar = {' ', '\t'};
+			for (j=0;j < indentsize;j++) {
+				curs += " ";
+			}
+			for (i=0; i < s.Length; i ++) {
+				char c = s[i];
+				if ((c == '\t' || c == ' ') && curs.Length >= maxsize) {
+					rets += curs;
+					rets += "\n";
+					curs = "";
+					for (j = 0 ;j < indentsize;j ++) {
+						curs += " ";
+					}
+					continue;
+				}
+				curs += c;
+			}
+			if (curs.Trim(trimchar) != "") {
+				rets += curs.Trim(trimchar) + "\n";
+			}
+			curs = "";
+			return rets;
+		}
+
+		public string get_help_info(_HelpSize helpsize=null,List<_ParserCompact> parentcmds=null) {
+			string s="";
+			if (helpsize == null) {
+				helpsize = this.get_help_size();
+			}
+			return s;
+		}
+
 		public string cmdname
 		{
 			get{
