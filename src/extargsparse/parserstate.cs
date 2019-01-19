@@ -372,5 +372,9 @@ namespace extargsparse
 			}
 			return (object)this.format_cmdname_path(this.m_cmdpaths);
 		}
+
+		public List<_ParserCompact> get_cmd_paths() {
+			return this.m_cmdpaths;
+		}
 	}
 }
