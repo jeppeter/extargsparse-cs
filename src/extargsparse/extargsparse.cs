@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace extargsparse
 {
@@ -158,6 +160,16 @@ namespace extargsparse
 			return;
 		}
 
+		private void _load_command_line_json_added(List<_ParserCompact> curparser)
+		{
+			return;
+		}
+
+		private void _load_command_line_help_added(List<_ParserCompact> curparser)
+		{
+			return;
+		}
+
 
 		public ExtArgsParse(ExtArgsOptions options=null, object priority=null) : base()
 		{
@@ -233,6 +245,41 @@ namespace extargsparse
 			this.m_jsonvaluemap.Add("command", new json_value_func(_json_value_error));
 			this.m_jsonvaluemap.Add("help", new json_value_func(_json_value_error));
 		}
+
+		private void _load_command_line_inner(string prefix,JObject jobj, List<_ParserCompact> curparser=null)
+		{
+			if (curparser == null) {
+				curparser = new List<_ParserCompact>();
+			}
+			if (!this.m_nojsonoption) {
+				this._load_command_line_json_added(curparser);
+			}
+			if (!this.m_nohelpoption) {
+				this._load_command_line_help_added(curparser);
+			}
+			return;
+		}
+
+		private void _load_command_line(JObject jobj)
+		{
+			if (this.m_ended != 0) {
+				this.throw_exception(String.Format("you have call parse_command_line before call load_command_line_string"));
+			}
+			this._load_command_line_inner("",jobj,null);
+			return;
+		}
+
+		public void load_command_line_string(string s)
+		{
+			JToken tok = JToken.Parse(s);
+			string stype = tok.GetType().FullName;
+			if (stype != "Newtonsoft.Json.Linq.JObject") {
+				this.throw_exception(String.Format("[{0}] not type {}", s));
+			}
+			this._load_command_line(tok.Value<JObject>());
+			return;
+		}
+
 	}
 
 }
