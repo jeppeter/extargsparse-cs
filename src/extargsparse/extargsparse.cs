@@ -7,6 +7,7 @@ namespace extargsparse
 	{
 		private delegate bool load_command_line_func(string prefix,KeyCls keycls,List<_ParserCompact> curparser=null);
 		private delegate int parse_action_func(NameSpaceEx ns, int validx, KeyCls keycls,string[] args);
+		private delegate NameSpaceEx json_set_func(NameSpaceEx ns);
 
 		private static Priority[]  m_defprior = {Priority.COMMAND_SET,Priority.SUB_COMMAND_JSON_SET,Priority.COMMAND_JSON_SET,Priority.ENVIRONMENT_SET,Priority.ENV_SUB_COMMAND_JSON_SET,Priority.ENV_COMMAND_JSON_SET,Priority.DEFAULT_SET};
 		private Priority[] m_priority;
@@ -26,6 +27,7 @@ namespace extargsparse
 		private string m_errorhandler;
 		private Dictionary<string,load_command_line_func> m_loadcommandmap;
 		private Dictionary<string,parse_action_func> m_optparsehandlemap;
+		private Dictionary<Priority, json_set_func> m_parsesetmap;
 
 		private bool _load_command_line_base(string prefix,KeyCls keycls, List<_ParserCompact> curparser=null)
 		{
@@ -98,6 +100,32 @@ namespace extargsparse
 			return 1;
 		}
 
+		private NameSpaceEx _parse_sub_command_json_set(NameSpaceEx ns)
+		{
+			return ns;
+		}
+
+
+		private NameSpaceEx _parse_command_json_set(NameSpaceEx ns)
+		{
+			return ns;
+		}
+
+		private NameSpaceEx _parse_environment_set(NameSpaceEx ns)
+		{
+			return ns;
+		}
+
+		private NameSpaceEx _parse_env_subcommand_json_set(NameSpaceEx ns)
+		{
+			return ns;
+		}
+
+		private NameSpaceEx _parse_env_command_json_set(NameSpaceEx ns)
+		{
+			return ns;
+		}
+
 
 		public ExtArgsParse(ExtArgsOptions options=null, object priority=null) : base()
 		{
@@ -154,6 +182,13 @@ namespace extargsparse
 			this.m_optparsehandlemap.Add("command", new parse_action_func(_command_action));
 			this.m_optparsehandlemap.Add("float", new parse_action_func(_float_action));
 
+
+			this.m_parsesetmap = new Dictionary<Priority,json_set_func>();
+			this.m_parsesetmap.Add(Priority.SUB_COMMAND_JSON_SET , new json_set_func(_parse_sub_command_json_set));
+			this.m_parsesetmap.Add(Priority.COMMAND_JSON_SET , new json_set_func(_parse_command_json_set));
+			this.m_parsesetmap.Add(Priority.ENVIRONMENT_SET , new json_set_func(_parse_environment_set));
+			this.m_parsesetmap.Add(Priority.ENV_SUB_COMMAND_JSON_SET , new json_set_func(_parse_env_subcommand_json_set));
+			this.m_parsesetmap.Add(Priority.ENV_COMMAND_JSON_SET , new json_set_func(_parse_env_command_json_set));
 		}
 	}
 
