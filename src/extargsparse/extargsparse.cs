@@ -6,7 +6,7 @@ namespace extargsparse
 	public class  ExtArgsParse  : _LogObject
 	{
 		private delegate bool load_command_line_func(string prefix,KeyCls keycls,List<_ParserCompact> curparser=null);
-		//private delegate int parse_action_func(NameSpaceEx args, int validx, KeyCls keycls,string[] params);
+		private delegate int parse_action_func(NameSpaceEx ns, int validx, KeyCls keycls,string[] args);
 
 		private static Priority[]  m_defprior = {Priority.COMMAND_SET,Priority.SUB_COMMAND_JSON_SET,Priority.COMMAND_JSON_SET,Priority.ENVIRONMENT_SET,Priority.ENV_SUB_COMMAND_JSON_SET,Priority.ENV_COMMAND_JSON_SET,Priority.DEFAULT_SET};
 		private Priority[] m_priority;
@@ -25,7 +25,7 @@ namespace extargsparse
 		private bool m_cmdprefixadded;
 		private string m_errorhandler;
 		private Dictionary<string,load_command_line_func> m_loadcommandmap;
-		//private Dictionary<string,parse_action_func> m_optparsehandlemap;
+		private Dictionary<string,parse_action_func> m_optparsehandlemap;
 
 		private bool _load_command_line_base(string prefix,KeyCls keycls, List<_ParserCompact> curparser=null)
 		{
@@ -57,43 +57,43 @@ namespace extargsparse
 			return true;
 		}
 
-		private int _string_action(NameSpaceEx args, int validx, KeyCls keycls, string[] params)
+		private int _string_action(NameSpaceEx ns,int validx,KeyCls keycls,string[] args)
 		{
 			return 1;
 		}
 
-		private int _bool_action(NameSpaceEx args, int validx, KeyCls keycls, string[] params)
+		private int _bool_action(NameSpaceEx ns,int validx,KeyCls keycls,string[] args)
 		{
 			return 0;
 		}
 
-		private int _int_action(NameSpaceEx args, int validx, KeyCls keycls, string[] params)
+		private int _int_action(NameSpaceEx ns,int validx,KeyCls keycls,string[] args)
 		{
 			return 1;
 		}
 
-		private int _append_action(NameSpaceEx args, int validx, KeyCls keycls, string[] params)
+		private int _append_action(NameSpaceEx ns,int validx,KeyCls keycls,string[] args)
 		{
 			return 1;
 		}
 
 
-		private int _inc_action(NameSpaceEx args, int validx, KeyCls keycls, string[] params)
+		private int _inc_action(NameSpaceEx ns,int validx,KeyCls keycls,string[] args)
 		{
 			return 0;
 		}
 
-		private int _help_action(NameSpaceEx args, int validx, KeyCls keycls, string[] params)
+		private int _help_action(NameSpaceEx ns,int validx,KeyCls keycls,string[] args)
 		{
 			return 0;
 		}
 
-		private int _command_action(NameSpaceEx args, int validx, KeyCls keycls, string[] params)
+		private int _command_action(NameSpaceEx ns,int validx,KeyCls keycls,string[] args)
 		{
 			return 0;
 		}
 
-		private int _float_action(NameSpaceEx args, int validx, KeyCls keycls, string[] params)
+		private int _float_action(NameSpaceEx ns,int validx,KeyCls keycls,string[] args)
 		{
 			return 1;
 		}
@@ -145,6 +145,14 @@ namespace extargsparse
 
 			this.m_optparsehandlemap = new Dictionary<string,parse_action_func>();
 			this.m_optparsehandlemap.Add("string", new parse_action_func(_string_action));
+			this.m_optparsehandlemap.Add("bool", new parse_action_func(_bool_action));
+			this.m_optparsehandlemap.Add("int", new parse_action_func(_int_action));
+			this.m_optparsehandlemap.Add("list", new parse_action_func(_append_action));
+			this.m_optparsehandlemap.Add("count", new parse_action_func(_inc_action));
+			this.m_optparsehandlemap.Add("help", new parse_action_func(_help_action));
+			this.m_optparsehandlemap.Add("jsonfile", new parse_action_func(_string_action));
+			this.m_optparsehandlemap.Add("command", new parse_action_func(_command_action));
+			this.m_optparsehandlemap.Add("float", new parse_action_func(_float_action));
 
 		}
 	}
