@@ -43,14 +43,37 @@ namespace extargsparse
 			return true;
 		}
 
-		private bool _load_command_line_help(string prefix, KeyCls keycls, List<_ParserCompact> curparser=null)
+		private bool _load_command_line_help(KeyCls keycls, List<_ParserCompact> curparser=null)
 		{
+			return this._check_flag_insert(keycls,curparser);
+		}
+
+		private bool _check_flag_insert(KeyCls keycls, List<_ParserCompact> curparser)
+		{
+			_ParserCompact lastparser = this.m_maincmd;
+			if (curparser.Count > 0) {
+				lastparser = curparser[curparser.Count - 1];
+			}
+			foreach (var k in lastparser.cmdopts) {
+				if (k.flagname != "$" && keycls.flagname != "$") {
+					if (k.type != "help" && keycls.type !=  "help") {
+						if (k.optdest == keycls.optdest) {
+							return false;
+						}
+					} else if (k.type == "type" && keycls.type == "help") {
+						return false;
+					}
+				} else if (k.flagname == "$" && keycls.flagname == "$") {
+					return false;
+				}
+			}
+			lastparser.cmdopts.Add(keycls);
 			return true;
 		}
 
-		private bool _load_command_line_jsonfile(string prefix, KeyCls keycls, List<_ParserCompact> curparser=null)
-		{
-			return true;
+		private bool _load_command_line_jsonfile(KeyCls keycls, List<_ParserCompact> curparser=null)
+		{			
+			return this._check_flag_insert(keycls,curparser);
 		}
 
 		private bool _load_command_line_subparser(string prefix, KeyCls keycls, List<_ParserCompact> curparser=null)
@@ -160,14 +183,43 @@ namespace extargsparse
 			return;
 		}
 
-		private void _load_command_line_json_added(List<_ParserCompact> curparser)
+		private string _format_cmd_from_cmd_array(List<_ParserCompact> curparser)
 		{
-			return;
+			string s="";
+			int i;
+			for (i=0 ; i < curparser.Count;i++) {
+				if (i > 0) {
+					s += ".";
+				}
+				s += curparser[i].cmdname;
+			}
+			return s;
 		}
 
-		private void _load_command_line_help_added(List<_ParserCompact> curparser)
+		private bool _load_command_line_json_added(List<_ParserCompact> curparser)
 		{
-			return;
+			string prefix="";
+			string key = String.Format("{0}##json input file to get the value set##", this.m_jsonlong);
+			JToken jtok = JToken.Parse("null");
+			KeyCls keycls;
+			prefix = this._format_cmd_from_cmd_array(curparser);
+			prefix = prefix.Replace('.','_');
+			keycls = new KeyCls(prefix,key,jtok,true,false,true,this.m_longprefix, this.m_shortprefix);
+			return this._load_command_line_jsonfile(keycls,curparser);
+		}
+
+		private bool _load_command_line_help_added(List<_ParserCompact> curparser)
+		{
+			string key = "";
+			JToken jtok = JToken.Parse("null");
+			KeyCls keycls;
+			key += String.Format("{0}", this.m_helplong);
+			if (this.m_helpshort != "") {
+				key += String.Format("|{0}", this.m_helpshort);
+			}
+			key += "##to display this help information##";
+			keycls = new KeyCls("",key,jtok,true,true,false,this.m_longprefix, this.m_shortprefix);
+			return this._load_command_line_help(keycls,curparser);
 		}
 
 
