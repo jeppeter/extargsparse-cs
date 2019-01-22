@@ -158,54 +158,38 @@ namespace extargsparse
 			return retstr;
 		}
 
-		public void Debug(string msg, int callstack=1)
+		public string format_call_msg(string msg,int callstack=1)
 		{
 			string callmsg;
-			callmsg = this.__get_caller(callstack + 1);
+			callmsg = this.__get_caller(callstack + 1)
 			callmsg += " ";
 			callmsg += msg;
+			return callmsg
+		}
 
-			this.m_logger.Debug(callmsg);
+		public void Debug(string msg, int callstack=1)
+		{
+			this.m_logger.Debug(this.format_call_msg(msg,callstack + 1));
 		}
 
 		public void Error(string msg, int callstack=1)
 		{
-			string callmsg;
-			callmsg = this.__get_caller(callstack + 1);
-			callmsg += " ";
-			callmsg += msg;
-
-			this.m_logger.Error(callmsg);
+			this.m_logger.Error(this.format_call_msg(msg,callstack + 1));
 		}
 
 		public void Warn(string msg, int callstack=1)
 		{
-			string callmsg;
-			callmsg = this.__get_caller(callstack + 1);
-			callmsg += " ";
-			callmsg += msg;
-
-			this.m_logger.Warn(callmsg);
+			this.m_logger.Warn(this.format_call_msg(msg,callstack + 1));
 		}
 
 		public void Info(string msg, int callstack=1)
 		{
-			string callmsg;
-			callmsg = this.__get_caller(callstack + 1);
-			callmsg += " ";
-			callmsg += msg;
-
-			this.m_logger.Info(callmsg);
+			this.m_logger.Info(this.format_call_msg(msg,callstack + 1));
 		}
 
 		public void Fatal(string msg, int callstack=1)
 		{
-			string callmsg;
-			callmsg = this.__get_caller(callstack + 1);
-			callmsg += " ";
-			callmsg += msg;
-
-			this.m_logger.Fatal(callmsg);
+			this.m_logger.Fatal(this.format_call_msg(msg,callstack + 1));
 		}		
 
 		private interface _NC

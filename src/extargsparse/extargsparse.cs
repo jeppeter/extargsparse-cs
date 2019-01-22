@@ -298,8 +298,39 @@ namespace extargsparse
 			this.m_jsonvaluemap.Add("help", new json_value_func(_json_value_error));
 		}
 
+		public void error_msg(msg)
+		{
+			bool output = false;
+			string s = "";
+			if (this.m_outputmode.Count > 0) {
+				if (this.m_outputmode[this.m_outputmode.Count - 1] == "bash") {
+					s += "cat >&2 <<EXTARGSEOF\n";
+					s += String.Format("parse command error\n    {0}\n", message);
+					s += "EXTARGSEOF\n";
+					s += "exit 3\n";
+					Console.Out.Write(s);
+					output= true;
+					Environment.Exit(3);
+				}
+			}
+			if (!output) {
+				s += "parse command error\n";
+				s += String.Format("    {0}", this.format_call_msg(msg,2));
+			}
+			if (this.m_errorhandler == "exit") {
+				Console.Error.Write(s);
+				Environment.Exit(3);
+			} else {
+				this.throw_exception(s);
+			}
+			return;
+		}
+
 		private void _load_command_line_inner(string prefix,JObject jobj, List<_ParserCompact> curparser=null)
 		{
+			List<_ParserCompact> parentpath ;
+			int i;
+			Dictionary<string,JToken> nobj;
 			if (curparser == null) {
 				curparser = new List<_ParserCompact>();
 			}
@@ -308,6 +339,25 @@ namespace extargsparse
 			}
 			if (!this.m_nohelpoption) {
 				this._load_command_line_help_added(curparser);
+			}
+
+			if (curparser.Count != 0) {
+				parentpath = curparser;
+			} else {
+				parentpath = new List<_ParserCompact>();
+				parentpath.Add(this.m_maincmd);
+			}
+
+			nobj = jobj.ToObject<Dictionary<string,JToken>>();
+			foreach(var kv in nobj) {
+				KeyCls keycls;
+				bool bval;
+				this.Info(String.Format("{0} , {1} , {2} , True", prefix,kv.Key,kv.Value));
+				keycls = new KeyCls(prefix,kv.Key, kv.Value,false,false,false,this.m_longprefix, this.m_shortprefix,this.m_options.get_bool("flagnochange"));
+				bval = this.m_loadcommandmap[keycls.type].DynamicInvoke(prefix,keycls,parentpath);
+				if (!bval) {
+					this.error_msg(String.Format("can not add ({0},{1})", kv.Key,kv.Value));
+				}
 			}
 			return;
 		}
