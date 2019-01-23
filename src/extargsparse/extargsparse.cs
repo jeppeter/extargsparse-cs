@@ -12,6 +12,8 @@ namespace extargsparse
 		private delegate NameSpaceEx json_set_func(NameSpaceEx ns);
 		private delegate void json_value_func(NameSpaceEx ns,KeyCls keycls,object value);
 
+		private static string[] reserved_args = {"subcommand","subnargs","nargs","extargs","args"};
+
 		private static Priority[]  m_defprior = {Priority.COMMAND_SET,Priority.SUB_COMMAND_JSON_SET,Priority.COMMAND_JSON_SET,Priority.ENVIRONMENT_SET,Priority.ENV_SUB_COMMAND_JSON_SET,Priority.ENV_COMMAND_JSON_SET,Priority.DEFAULT_SET};
 		private Priority[] m_priority;
 		private ExtArgsOptions  m_options;
@@ -32,21 +34,6 @@ namespace extargsparse
 		private Dictionary<string,parse_action_func> m_optparsehandlemap;
 		private Dictionary<Priority, json_set_func> m_parsesetmap;
 		private Dictionary<string,json_value_func> m_jsonvaluemap;
-
-		private bool _load_command_line_base(string prefix,KeyCls keycls, List<_ParserCompact> curparser=null)
-		{
-			return true;
-		}
-
-		private bool _load_command_line_args(string prefix, KeyCls keycls, List<_ParserCompact> curparser=null)
-		{
-			return true;
-		}
-
-		private bool _load_command_line_help(KeyCls keycls, List<_ParserCompact> curparser=null)
-		{
-			return this._check_flag_insert(keycls,curparser);
-		}
 
 		private bool _check_flag_insert(KeyCls keycls, List<_ParserCompact> curparser)
 		{
@@ -71,13 +58,87 @@ namespace extargsparse
 			return true;
 		}
 
+		private void _check_flag_insert_mustsucc(KeyCls keycls, List<_ParserCompact> curparser)
+		{
+			bool bval;
+			string cmdname = "";
+			bval = this._check_flag_insert(keycls,curparser);
+			if (!bval) {
+				if (curparser != null) {
+					int i=0;
+					foreach(var c in curparser) {
+						if (i > 0) {
+							cmdname += ".";
+						}
+						cmdname += c.cmdname;
+						i ++;
+					}
+				}
+				self.error_msg(String.Format("({0}) already in command({1})",keycls.flagname,cmdname));
+			}
+			return;
+		}
+
+		private bool _load_command_line_base(string prefix,KeyCls keycls, List<_ParserCompact> curparser=null)
+		{
+			if (keycls.isflag && keycls.flagname != "$" && Array.Find(ExtArgsParse.reserved_args, keycls.flagname) >= 0) {
+				this.error_msg(String.Format("({0}) in reserved_args ({1})",keycls.flagname,ExtArgsParse.reserved_args));
+			}
+			this._check_flag_insert_mustsucc(keycls,curparser);
+			return true;
+		}
+
+		private bool _load_command_line_args(string prefix, KeyCls keycls, List<_ParserCompact> curparser=null)
+		{
+			return this._check_flag_insert(keycls,curparser);
+		}
+
+		private bool _load_command_line_help(KeyCls keycls, List<_ParserCompact> curparser=null)
+		{
+			return this._check_flag_insert(keycls,curparser);
+		}
+
+
 		private bool _load_command_line_jsonfile(KeyCls keycls, List<_ParserCompact> curparser=null)
 		{			
 			return this._check_flag_insert(keycls,curparser);
 		}
 
+		private _ParserCompact _get_subparser_inner(KeyCls keycls, List<_ParserCompact> curparser=null)
+		{
+			string cmdname = "";
+			string parentname;
+			parentname = this._format_cmd_from_cmd_array(curparser);
+			cmdname += parentname;
+			if (cmdname.Length > 0) {
+				cmdname += ".";
+			}
+			cmdname += keycls.cmdname;
+		}
+
 		private bool _load_command_line_subparser(string prefix, KeyCls keycls, List<_ParserCompact> curparser=null)
 		{
+			_ParserCompact parser;
+			List<_ParserCompact> nextparser = new List<_ParserCompact>();
+			string nextprefix="";
+			if (keycls.value == null || keycls.value.GetType().FullName != "Newtonsoft.Json.Linq.JObject") {
+				this.error_msg(String.Format("({0}) value must be dict",keycls.origkey));
+			}
+			if (keycls.iscmd && Array.Find(ExtArgsParse.reserved_args, keycls.cmdname) >= 0) {
+				this.error_msg(String.Format("command({0}) in reserved_args ({1})",keycls.cmdname,ExtArgsParse.reserved_args));
+			}
+
+			parser = this._get_subparser_inner(keycls,curparser);
+			if (curparser != null && curparser.Count > 0) {
+				nextparser = curparser;
+			} else {
+				nextparser.Add(this.m_maincmd);
+			}
+
+			if (this.m_cmdprefixadded) {
+
+			}
+
 			return true;
 		}
 
