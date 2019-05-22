@@ -136,9 +136,16 @@ namespace extargsparse
 			}
 
 			if (this.m_cmdprefixadded) {
-
+				nextprefix = prefix;
+				if (nextprefix.Length > 0) {
+					nextprefix += "_";
+				}
+				nextprefix += keycls.cmdname;
+			} else {
+				nextprefix = "";
 			}
-
+			this._load_command_line_inner(nextprefix,keycls.value,nextparser);
+			nextparser.RemoveAt(nextparser.Count - 1);
 			return true;
 		}
 
