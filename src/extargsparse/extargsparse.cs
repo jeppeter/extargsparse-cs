@@ -151,11 +151,33 @@ namespace extargsparse
 
 		private bool _load_command_line_prefix(string prefix, KeyCls keycls, List<_ParserCompact> curparser=null)
 		{
+			if (Array.Find(this.reserved_args, element => element == keycls.prefix) != "") {
+				string msg;
+				msg = String.Format("prefix ({}) in reserved_args ({})", keycls.prefix, this.reserved_args);
+				this.error_msg(msg);
+			}
+			this._load_command_line_inner(keycls.prefix,keycls.value, curparser);
 			return true;
+		}
+
+		private void _need_args_error(int validx, KeyCls keycls,string[] args)
+		{
+			string keyval = "";
+			if (validx > 0) {
+				keyval = args[validx - 1];
+			}
+			if (keycls.longopt == keyval) {
+				keyval = keycls.longopt;
+			} 
+			self.error_msg(String.Format("[{0}] need args", keyval));
+			return;
 		}
 
 		private int _string_action(NameSpaceEx ns,int validx,KeyCls keycls,string[] args)
 		{
+			if (args.Length <= validx) {
+				this._need_args_error(validx,keycls, args);
+			}
 			return 1;
 		}
 
