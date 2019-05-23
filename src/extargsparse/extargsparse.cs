@@ -153,7 +153,7 @@ namespace extargsparse
 		{
 			if (Array.Find(this.reserved_args, element => element == keycls.prefix) != "") {
 				string msg;
-				msg = String.Format("prefix ({}) in reserved_args ({})", keycls.prefix, this.reserved_args);
+				msg = String.Format("prefix ({0}) in reserved_args ({1})", keycls.prefix, this.reserved_args);
 				this.error_msg(msg);
 			}
 			this._load_command_line_inner(keycls.prefix,keycls.value, curparser);
@@ -168,7 +168,9 @@ namespace extargsparse
 			}
 			if (keycls.longopt == keyval) {
 				keyval = keycls.longopt;
-			} 
+			} else if (keycls.shortflag != "" && keyval.IndexOf(keycls.shortflag) >= 1) {
+				keyval = keycls.shortopt;
+			}
 			self.error_msg(String.Format("[{0}] need args", keyval));
 			return;
 		}
@@ -178,11 +180,17 @@ namespace extargsparse
 			if (args.Length <= validx) {
 				this._need_args_error(validx,keycls, args);
 			}
+			ns.set_value(keycls.optdest,args[validx]);
 			return 1;
 		}
 
 		private int _bool_action(NameSpaceEx ns,int validx,KeyCls keycls,string[] args)
 		{
+			if (keycls.value) {
+				ns.set_value(keycls.optdest, false);
+			} else {
+				ns.set_value(keycls.optdest, true);
+			}
 			return 0;
 		}
 
