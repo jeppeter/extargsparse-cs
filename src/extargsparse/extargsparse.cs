@@ -248,6 +248,15 @@ public class  ExtArgsParse  : _LogObject
 
     private int _append_action(NameSpaceEx ns, int validx, KeyCls keycls, string[] args)
     {
+        string val;
+        string[] arr;
+        List<String> marr;
+        if (validx >= args.Length) {
+            this._need_args_error(validx, keycls, args);
+        }
+        val = args[validx];
+        arr = ns.get_array(keycls.optdest);
+
         return 1;
     }
 

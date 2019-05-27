@@ -75,6 +75,21 @@ namespace extargsparse
 			return ival;
 		}
 
+		public string[] get_array(string k)
+		{
+			string[] arr = {};
+			object obj = null;
+			if (this.m_dict.ContainsKey(k)) {
+				obj = this.m_dict[k];
+				if (obj != null) {
+					if (obj.GetType().FullName == "System.String[]") {
+						arr = (string[]) obj;
+					}
+				}
+			}
+			return arr;
+		}
+
 		public bool get_bool(string k)
 		{
 			bool bval = false;
