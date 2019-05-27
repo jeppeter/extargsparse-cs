@@ -250,24 +250,37 @@ public class  ExtArgsParse  : _LogObject
     {
         string val;
         string[] arr;
-        List<String> marr;
         if (validx >= args.Length) {
             this._need_args_error(validx, keycls, args);
         }
         val = args[validx];
         arr = ns.get_array(keycls.optdest);
-
+        Array.Resize(ref arr,  arr.Length + 1);
+        arr[arr.Length - 1] = val;
+        ns.set_value(keycls.optdest, arr);
         return 1;
     }
 
 
     private int _inc_action(NameSpaceEx ns, int validx, KeyCls keycls, string[] args)
     {
+        int ival;
+        ival = ns.get_int(keycls.optdest);
+        ival ++;
+        ns.set_value(keycls.optdest, ival);
         return 0;
+    }
+
+    public void print_help(System.IO.TextWriter writer , string cmdname)
+    {
+        
     }
 
     private int _help_action(NameSpaceEx ns, int validx, KeyCls keycls, string[] args)
     {
+        string v = (string)args;
+        this.print_help(Console.Out, v);
+        System.Environment.Exit(0);
         return 0;
     }
 
