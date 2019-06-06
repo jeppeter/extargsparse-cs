@@ -271,6 +271,26 @@ public class  ExtArgsParse  : _LogObject
         return 0;
     }
 
+    private void _set_command_line_self_args_inner(object paths=null)
+    {
+    }
+
+    private void _check_varname_inner(object paths=null,OptCheck optchk=null)
+    {
+        
+    }
+
+    private void _set_command_line_self_args(object paths=null)
+    {
+        if (this.m_ended != 0) {
+            return;
+        }
+        this._set_command_line_self_args_inner(paths)
+        this._check_varname_inner()
+        this.m_ended = 1;
+        return;
+    }
+
     public void print_help(System.IO.TextWriter writer , string cmdname)
     {
         
