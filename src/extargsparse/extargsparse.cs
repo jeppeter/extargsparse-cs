@@ -271,8 +271,26 @@ public class  ExtArgsParse  : _LogObject
         return 0;
     }
 
-    private void _set_command_line_self_args_inner(object paths=null)
+    private void _set_command_line_self_args_inner(object paths1=null)
     {
+        List<_ParserCompact> parentpaths = new List<_ParserCompact>();
+        bool setted = false;
+        _ParserCompact curparser;
+        parentpaths.Add(this.m_maincmd);
+        if (paths1 != null) {
+            parentpaths = (List<_ParserCompact>) paths1;
+        }
+        curparser = parentpaths[parentpaths.Count() - 1];
+        foreach(var opt in curparser.cmdopts){
+            if (opt.isflag && opt.flagname == "$") {
+                setted = true;
+            }
+        }
+
+        if (!setted) {
+            
+        }
+
     }
 
     private void _check_varname_inner(object paths=null,OptCheck optchk=null)
