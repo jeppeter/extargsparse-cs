@@ -288,9 +288,22 @@ public class  ExtArgsParse  : _LogObject
         }
 
         if (!setted) {
-            
+            string cmdname = this._format_cmd_from_cmd_array(parentpaths);
+            if (cmdname == "") {
+                this.error_msg(String.Format("can not get cmd () whole name"));
+            }
+            string prefix = cmdname.Replace('.','_');
+            KeyCls curkey = new KeyCls("","$","*",true);
+            this._load_command_line_args("",curkey, parentpaths);
         }
-
+        for (var chld in curparser.subcommands) {
+            List<_ParserCompact> curpaths = new List<_ParserCompact>();
+            foreach (var c in parentpaths) {
+                curpaths.Add(c);
+            }
+            this._set_command_line_self_args_inner(curpaths);            
+        }
+        return;
     }
 
     private void _check_varname_inner(object paths=null,OptCheck optchk=null)
