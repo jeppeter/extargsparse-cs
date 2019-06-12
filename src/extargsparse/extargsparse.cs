@@ -308,7 +308,49 @@ public class  ExtArgsParse  : _LogObject
 
     private void _check_varname_inner(object paths=null,OptCheck optchk=null)
     {
-        
+        List<_ParserCompact> parentpaths = new List<_ParserCompact>();
+        _ParserCompact curparser;
+        bool bval;
+        if (optchk == null) {
+            optchk = new OptCheck();
+        }
+        parentpaths.Add(this.m_maincmd);
+        if (paths != null) {
+            parentpaths = (List<_ParserCompact>) paths;
+        }
+        curparser = parentpaths[parentpaths.Count() - 1];
+        foreach(var opt in curparser.cmdopts) {
+            if (opt.isflag) {
+                if (opt.type == "help" || opt.type == "args") {
+                    continue;
+                }
+                bval = optchk.add_and_check("varname", opt.varname);
+                if (!bval) {
+                    this.error_msg(String.Format("{0} is already in the check list", opt.varname));
+                }
+                bval = optchk.add_and_check("longopt", opt.longopt);
+                if (!bval) {
+                    this.error_msg(String.Format("{1} is already in the check list", opt.longopt));
+                }
+
+                if (opt.shortopt != "") {
+                    bval = optchk.add_and_check("shortopt", opt.shortopt);
+                    if (!bval) {
+                        this.error_msg(String.Format("{1} is already in the check list", opt.shortopt));
+                    }
+                }
+            }   
+        }
+        foreach (var chld in curparser.subcommands) {
+            List<_ParserCompact> curpaths = new List<_ParserCompact>();
+            OptCheck cpychk = new OptCheck();
+            foreach(var c in parentpaths) {
+                curpaths.Add(c);
+            }
+            cpychk.copy(optchk);
+            this._check_varname_inner(curpaths,cpychk);
+        }
+        return;
     }
 
     private void _set_command_line_self_args(object paths=null)
