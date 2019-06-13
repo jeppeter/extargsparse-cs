@@ -364,9 +364,36 @@ public class  ExtArgsParse  : _LogObject
         return;
     }
 
-    public void print_help(System.IO.TextWriter writer , string cmdname)
+    private List<_ParserCompact> _find_commands_in_path(string cmdname,_ParserCompact curparser=null)
     {
-        
+        string[] sarr = []{""};
+        List<_ParserCompact> retparser = new List<_ParserCompact>();
+        int i=0;
+        if (cmdname != "") {
+            sarr = cmdname.Split('.');
+        }
+        if (this.m_maincmd != null) {
+            retparser.Add(this.m_maincmd);
+        }
+
+        while(i <= sarr.Length() && cmdname != "" ) {
+            if (i > 0) {
+                _ParserCompact curcommand = this._find_command_inner(sarr[i-1],retparser);
+                if (curcommand == null) {
+                    break;
+                }
+                retparser.Add(curcommand);
+            }
+            i ++;
+        }
+        return retparser;
+    }
+
+    public void print_help(System.IO.TextWriter writer = System.Console.Err , string cmdname = "")
+    {
+        List<_ParserCompact> paths;
+        this._set_command_line_self_args();
+        paths = this._find
     }
 
     private int _help_action(NameSpaceEx ns, int validx, KeyCls keycls, string[] args)
