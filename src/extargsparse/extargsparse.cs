@@ -364,6 +364,22 @@ public class  ExtArgsParse  : _LogObject
         return;
     }
 
+    private _ParserCompact _find_command_inner(string name,object curparser1=null)
+    {
+        _ParserCompact retparser = null;
+        _ParserCompact curroot = this.m_maincmd;
+        List<_ParserCompact> nextparser = new List<_ParserCompact>();    
+        string[] sarr;
+        sarr = name.Split('.');
+        if (curparser1 != null) {
+            nextparser = (List<_ParserCompact>) curparser1;
+            curroot = nextparser[nextparser.Count() - 1];
+        }
+        
+
+        return retparser;
+    }
+
     private List<_ParserCompact> _find_commands_in_path(string cmdname,_ParserCompact curparser=null)
     {
         string[] sarr = []{""};
