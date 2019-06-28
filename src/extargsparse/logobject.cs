@@ -161,10 +161,10 @@ namespace extargsparse
 		public string format_call_msg(string msg,int callstack=1)
 		{
 			string callmsg;
-			callmsg = this.__get_caller(callstack + 1)
+			callmsg = this.__get_caller(callstack + 1);
 			callmsg += " ";
 			callmsg += msg;
-			return callmsg
+			return callmsg;
 		}
 
 		public void Debug(string msg, int callstack=1)

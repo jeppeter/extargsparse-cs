@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace extargsparse
 {
-	public class _OptCheck
+	public class OptCheck
 	{
 		private List<string> m_longopt;
 		private List<string> m_shortopt;
@@ -16,12 +16,12 @@ namespace extargsparse
 			return;
 		}
 
-		public _OptCheck()
+		public OptCheck()
 		{
 			this.__reset();
 		}
 
-		public void copy(_OptCheck  other)
+		public void copy(OptCheck  other)
 		{
 			int i;
 			this.__reset();

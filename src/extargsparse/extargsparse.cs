@@ -74,15 +74,24 @@ public class  ExtArgsParse  : _LogObject
                     i ++;
                 }
             }
-            self.error_msg(String.Format("({0}) already in command({1})", keycls.flagname, cmdname));
+            this.error_msg(String.Format("({0}) already in command({1})", keycls.flagname, cmdname));
         }
         return;
     }
 
     private bool _load_command_line_base(string prefix, KeyCls keycls, List<_ParserCompact> curparser = null)
     {
-        if (keycls.isflag && keycls.flagname != "$" && Array.Find(ExtArgsParse.reserved_args, keycls.flagname) >= 0) {
-            this.error_msg(String.Format("({0}) in reserved_args ({1})", keycls.flagname, ExtArgsParse.reserved_args));
+
+        if (keycls.isflag && keycls.flagname != "$") {
+            int findidx=-1;
+            foreach(var c  in ExtArgsParse.reserved_args)  {
+                if   (c  ==   keycls.flagname)  {
+                    findidx = 1;
+                }
+            }
+            if  (findidx >=  0)  {
+                this.error_msg(String.Format("({0}) in reserved_args ({1})", keycls.flagname, ExtArgsParse.reserved_args));    
+            }            
         }
         this._check_flag_insert_mustsucc(keycls, curparser);
         return true;
@@ -114,6 +123,7 @@ public class  ExtArgsParse  : _LogObject
             cmdname += ".";
         }
         cmdname += keycls.cmdname;
+        return null;
     }
 
     private bool _load_command_line_subparser(string prefix, KeyCls keycls, List<_ParserCompact> curparser = null)
@@ -124,8 +134,17 @@ public class  ExtArgsParse  : _LogObject
         if (keycls.value == null || keycls.value.GetType().FullName != "Newtonsoft.Json.Linq.JObject") {
             this.error_msg(String.Format("({0}) value must be dict", keycls.origkey));
         }
-        if (keycls.iscmd && Array.Find(ExtArgsParse.reserved_args, keycls.cmdname) >= 0) {
-            this.error_msg(String.Format("command({0}) in reserved_args ({1})", keycls.cmdname, ExtArgsParse.reserved_args));
+        if (keycls.iscmd) {
+            int findidx=-1;
+            foreach(var c in ExtArgsParse.reserved_args) {
+                if  (c == keycls.cmdname) {
+                    findidx = 1;
+                }
+            }
+            if (findidx >= 0) {
+                this.error_msg(String.Format("command({0}) in reserved_args ({1})", keycls.cmdname, ExtArgsParse.reserved_args));    
+            }
+            
         }
 
         parser = this._get_subparser_inner(keycls, curparser);
@@ -144,19 +163,19 @@ public class  ExtArgsParse  : _LogObject
         } else {
             nextprefix = "";
         }
-        this._load_command_line_inner(nextprefix, keycls.value, nextparser);
+        this._load_command_line_inner(nextprefix, (JObject)keycls.value, nextparser);
         nextparser.RemoveAt(nextparser.Count - 1);
         return true;
     }
 
     private bool _load_command_line_prefix(string prefix, KeyCls keycls, List<_ParserCompact> curparser = null)
     {
-        if (Array.Find(this.reserved_args, element => element == keycls.prefix) != "") {
+        if (Array.Find(ExtArgsParse.reserved_args, element => element == keycls.prefix) != "") {
             string msg;
-            msg = String.Format("prefix ({0}) in reserved_args ({1})", keycls.prefix, this.reserved_args);
+            msg = String.Format("prefix ({0}) in reserved_args ({1})", keycls.prefix, ExtArgsParse.reserved_args);
             this.error_msg(msg);
         }
-        this._load_command_line_inner(keycls.prefix, keycls.value, curparser);
+        this._load_command_line_inner(keycls.prefix, (JObject)keycls.value, curparser);
         return true;
     }
 
@@ -171,7 +190,7 @@ public class  ExtArgsParse  : _LogObject
         } else if (keycls.shortflag != "" && keyval.IndexOf(keycls.shortflag) >= 1) {
             keyval = keycls.shortopt;
         }
-        self.error_msg(String.Format("[{0}] need args", keyval));
+        this.error_msg(String.Format("[{0}] need args", keyval));
         return;
     }
 
@@ -186,7 +205,7 @@ public class  ExtArgsParse  : _LogObject
 
     private int _bool_action(NameSpaceEx ns, int validx, KeyCls keycls, string[] args)
     {
-        if (keycls.value) {
+        if ((bool)keycls.value == true) {
             ns.set_value(keycls.optdest, false);
         } else {
             ns.set_value(keycls.optdest, true);
@@ -196,10 +215,10 @@ public class  ExtArgsParse  : _LogObject
 
     private int _int_action(NameSpaceEx ns, int validx, KeyCls keycls, string[] args)
     {
-        int base = 10;
+        int basenum;
         string intstr;
         int intval = 0;
-        char c;
+        basenum = 10;
         if (validx >= args.Length) {
             this._need_args_error(validx, keycls, args);
         }
@@ -207,16 +226,16 @@ public class  ExtArgsParse  : _LogObject
             intstr = args[validx];
             if (args[validx].StartsWith("x") ||
                     args[validx].StartsWith("X")) {
-                base = 16;
-                intstr = args[validx].SubString(1);
+                basenum = 16;
+                intstr = args[validx].Substring(1);
             } else if (args[validx].StartsWith("0x") ||
                        args[validx].StartsWith("0X")) {
-                base = 16;
-                intstr = args[validx].SubString(2);
+                basenum = 16;
+                intstr = args[validx].Substring(2);
             }
 
-            if (base == 16) {
-                foreach (c in intstr) {
+            if (basenum == 16) {
+                foreach (char c in intstr) {
                     intval <<= 4;
                     if (c >= '0' && c <= '9') {
                         intval += c - '0';
@@ -229,7 +248,7 @@ public class  ExtArgsParse  : _LogObject
                     }
                 }
             } else {
-                foreach (c in intstr) {
+                foreach (char c in intstr) {
                     intval *= 10;
                     if (c >= '0' && c <= '9') {
                         intval += c - '0';
@@ -265,7 +284,7 @@ public class  ExtArgsParse  : _LogObject
     private int _inc_action(NameSpaceEx ns, int validx, KeyCls keycls, string[] args)
     {
         int ival;
-        ival = ns.get_int(keycls.optdest);
+        ival = (int)ns.get_int(keycls.optdest);
         ival ++;
         ns.set_value(keycls.optdest, ival);
         return 0;
@@ -280,7 +299,7 @@ public class  ExtArgsParse  : _LogObject
         if (paths1 != null) {
             parentpaths = (List<_ParserCompact>) paths1;
         }
-        curparser = parentpaths[parentpaths.Count() - 1];
+        curparser = parentpaths[(parentpaths.Count - 1)];
         foreach(var opt in curparser.cmdopts){
             if (opt.isflag && opt.flagname == "$") {
                 setted = true;
@@ -296,7 +315,7 @@ public class  ExtArgsParse  : _LogObject
             KeyCls curkey = new KeyCls("","$","*",true);
             this._load_command_line_args("",curkey, parentpaths);
         }
-        for (var chld in curparser.subcommands) {
+        foreach (var chld in curparser.subcommands) {
             List<_ParserCompact> curpaths = new List<_ParserCompact>();
             foreach (var c in parentpaths) {
                 curpaths.Add(c);
@@ -318,7 +337,7 @@ public class  ExtArgsParse  : _LogObject
         if (paths != null) {
             parentpaths = (List<_ParserCompact>) paths;
         }
-        curparser = parentpaths[parentpaths.Count() - 1];
+        curparser = parentpaths[parentpaths.Count - 1];
         foreach(var opt in curparser.cmdopts) {
             if (opt.isflag) {
                 if (opt.type == "help" || opt.type == "args") {
@@ -358,32 +377,39 @@ public class  ExtArgsParse  : _LogObject
         if (this.m_ended != 0) {
             return;
         }
-        this._set_command_line_self_args_inner(paths)
-        this._check_varname_inner()
+        this._set_command_line_self_args_inner(paths);
+        this._check_varname_inner();
         this.m_ended = 1;
         return;
     }
 
     private _ParserCompact _find_command_inner(string name,object curparser1=null)
     {
-        _ParserCompact retparser = null;
         _ParserCompact curroot = this.m_maincmd;
         List<_ParserCompact> nextparser = new List<_ParserCompact>();    
         string[] sarr;
+        int idx;
         sarr = name.Split('.');
         if (curparser1 != null) {
             nextparser = (List<_ParserCompact>) curparser1;
-            curroot = nextparser[nextparser.Count() - 1];
+            curroot = nextparser[nextparser.Count - 1];
         }
         if (sarr.Length > 1 ) {
             nextparser.Add(curroot);
             foreach(var c in curroot.subcommands) {
                 if (c.cmdname == sarr[0]) {
+                    string patstr = "";
                     if (curparser1 != null) {
                         nextparser = (List<_ParserCompact>) curparser1;
                     }
                     nextparser.Add(c);
-                    return this._find_command_inner(sarr[1:].Join('.'),nextparser);
+                    for(idx=1;idx < sarr.Length ;idx ++) {
+                        if (idx > 1) {
+                            patstr +=  ".";
+                        }
+                        patstr +=  sarr[idx];
+                    }
+                    return this._find_command_inner(patstr,nextparser);
                 }
             }
         } else {
@@ -398,7 +424,7 @@ public class  ExtArgsParse  : _LogObject
 
     private List<_ParserCompact> _find_commands_in_path(string cmdname,_ParserCompact curparser=null)
     {
-        string[] sarr = []{""};
+        string[] sarr = {""};
         List<_ParserCompact> retparser = new List<_ParserCompact>();
         int i=0;
         if (cmdname != "") {
@@ -408,7 +434,7 @@ public class  ExtArgsParse  : _LogObject
             retparser.Add(this.m_maincmd);
         }
 
-        while(i <= sarr.Length() && cmdname != "" ) {
+        while(i <= sarr.Length && cmdname != "" ) {
             if (i > 0) {
                 _ParserCompact curcommand = this._find_command_inner(sarr[i-1],retparser);
                 if (curcommand == null) {
@@ -421,14 +447,17 @@ public class  ExtArgsParse  : _LogObject
         return retparser;
     }
 
-    public void print_help(System.IO.TextWriter writer = System.Console.Err , string cmdname = "")
+    public void print_help(System.IO.TextWriter writer = null , string cmdname = "")
     {
-        List<_ParserCompact> paths;
+        //List<_ParserCompact> paths;
+        if (writer == null) {
+            writer =  System.Console.Error;
+        }
         this._set_command_line_self_args();
-        paths = this._find
+        return;
     }
 
-    private int _help_action(NameSpaceEx ns, int validx, KeyCls keycls, string[] args)
+    private int _help_action(NameSpaceEx ns, int validx, KeyCls keycls, object args)
     {
         string v = (string)args;
         this.print_help(Console.Out, v);
@@ -617,14 +646,14 @@ public class  ExtArgsParse  : _LogObject
         this.m_jsonvaluemap.Add("help", new json_value_func(_json_value_error));
     }
 
-    public void error_msg(msg)
+    public void error_msg(string msg)
     {
         bool output = false;
         string s = "";
         if (this.m_outputmode.Count > 0) {
             if (this.m_outputmode[this.m_outputmode.Count - 1] == "bash") {
                 s += "cat >&2 <<EXTARGSEOF\n";
-                s += String.Format("parse command error\n    {0}\n", message);
+                s += String.Format("parse command error\n    {0}\n", msg);
                 s += "EXTARGSEOF\n";
                 s += "exit 3\n";
                 Console.Out.Write(s);
@@ -648,7 +677,6 @@ public class  ExtArgsParse  : _LogObject
     private void _load_command_line_inner(string prefix, JObject jobj, List<_ParserCompact> curparser = null)
     {
         List<_ParserCompact> parentpath ;
-        int i;
         Dictionary<string, JToken> nobj;
         if (curparser == null) {
             curparser = new List<_ParserCompact>();
@@ -673,7 +701,7 @@ public class  ExtArgsParse  : _LogObject
             bool bval;
             this.Info(String.Format("{0} , {1} , {2} , True", prefix, kv.Key, kv.Value));
             keycls = new KeyCls(prefix, kv.Key, kv.Value, false, false, false, this.m_longprefix, this.m_shortprefix, this.m_options.get_bool("flagnochange"));
-            bval = this.m_loadcommandmap[keycls.type].DynamicInvoke(prefix, keycls, parentpath);
+            bval = (bool)this.m_loadcommandmap[keycls.type].DynamicInvoke(prefix, keycls, parentpath);
             if (!bval) {
                 this.error_msg(String.Format("can not add ({0},{1})", kv.Key, kv.Value));
             }

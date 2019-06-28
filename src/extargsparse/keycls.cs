@@ -563,6 +563,16 @@ public class KeyCls
         }
     }
 
+    public  string  origkey
+    {
+        get {
+            return this.m_origkey;
+        }
+        set {
+            this.__throw_exception(String.Format("origkey can not set"));   
+        }
+    }
+
     private Object __get_value(string name)
     {
         if (Array.IndexOf(KeyCls.m_flagwords, name) >= 0) {
